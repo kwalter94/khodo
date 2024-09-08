@@ -30,16 +30,13 @@ abstract class MainLayout
       mount Shared::LayoutHead, page_title: page_title
 
       body do
+        mount Shared::Navbar, current_user
         mount Shared::FlashMessages, context.flash
-        render_signed_in_user
-        content
+
+        div class: "container" do
+          content
+        end
       end
     end
-  end
-
-  private def render_signed_in_user
-    text current_user.email
-    text " - "
-    link "Sign out", to: SignIns::Delete, flow_id: "sign-out-button"
   end
 end
