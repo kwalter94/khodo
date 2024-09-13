@@ -2,40 +2,66 @@ class CreateAccountBalanceReport::V20240908184936 < Avram::Migrator::Migration::
   def migrate
     execute <<-SQL
       CREATE VIEW account_balance_report AS
-        WITH all_time_balance AS (
+        WITH all_time_income AS (
+          SELECT
+            to_account_id AS account_id,
+            SUM(COALESCE(to_amount, 0)) AS total_income
+          FROM transactions
+          GROUP BY to_account_id
+        ),
+        all_time_expenses AS (
+          SELECT
+            from_account_id AS account_id,
+            SUM(COALESCE(from_amount, 0)) AS total_expenses
+          FROM transactions
+          GROUP BY from_account_id
+        ),
+        all_time_balance AS (
           SELECT
             accounts.id AS account_id,
             accounts.owner_id,
             accounts.name,
             currencies.name AS currency_name,
-            COALESCE(SUM(to_tx.to_amount), 0) - COALESCE(SUM(from_tx.from_amount), 0) AS balance
+            SUM(COALESCE(all_time_income.total_income, 0)) - SUM(COALESCE(all_time_expenses.total_expenses, 0)) AS balance
           FROM accounts
           INNER JOIN currencies
             ON currencies.id = accounts.currency_id
-          LEFT JOIN transactions AS from_tx
-            ON from_tx.from_account_id = accounts.id
-          LEFT JOIN transactions AS to_tx
-            ON to_tx.to_account_id = accounts.id
+          LEFT JOIN all_time_expenses
+            ON all_time_expenses.account_id = accounts.id
+          LEFT JOIN all_time_income
+            ON all_time_income.account_id = accounts.id
           GROUP BY
             accounts.id,
             accounts.owner_id,
             accounts.name,
             currencies.name
         ),
-        last_month_balance AS (
+        last_month_income AS (
           SELECT
+            to_account_id AS account_id,
+            SUM(COALESCE(to_amount, 0)) AS total_additions
+          FROM transactions
+          WHERE transaction_date >= CURRENT_DATE - INTERVAL '1 month'
+          GROUP BY to_account_id
+        ),
+        last_month_expenses AS (
+          SELECT
+            from_account_id AS account_id,
+            SUM(COALESCE(from_amount, 0)) AS total_deductions
+          FROM transactions
+          WHERE transaction_date >= CURRENT_DATE - INTERVAL '1 month'
+          GROUP BY from_account_id
+        ),
+        last_month_balance AS (
+          SELECT DISTINCT
             accounts.id AS account_id,
-            COALESCE(SUM(to_tx.to_amount), 0) AS total_additions,
-            COALESCE(SUM(from_tx.from_amount), 0) AS total_deductions
+            COALESCE(last_month_income.total_additions, 0) AS total_additions,
+            COALESCE(last_month_expenses.total_deductions, 0) AS total_deductions
           FROM accounts
-          LEFT JOIN transactions AS from_tx
-            ON from_tx.from_account_id = accounts.id
-            AND from_tx.transaction_date >= CURRENT_DATE - INTERVAL '1 month'
-          LEFT JOIN transactions AS to_tx
-            ON to_tx.to_account_id = accounts.id
-            AND to_tx.transaction_date >= CURRENT_DATE - INTERVAL '1 month'
-          GROUP BY
-            accounts.id
+          LEFT JOIN last_month_income
+            ON last_month_income.account_id = accounts.id
+          LEFT JOIN last_month_expenses
+            ON last_month_expenses.account_id = accounts.id
         )
         SELECT
           all_time_balance.account_id,

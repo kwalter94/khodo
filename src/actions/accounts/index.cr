@@ -1,10 +1,16 @@
 class Accounts::Index < BrowserAction
   get "/accounts" do
-    query = AccountBalanceReportQuery
+    asset_accounts = AccountQuery
       .new
       .owner_id(current_user.id)
-      .preload_account
+      .where_type(AccountTypeQuery.new.name.in(["Asset", "Liability"]))
 
-    html IndexPage, account_balance_report: query
+    report = AccountBalanceReportQuery
+      .new
+      .preload_account
+      .owner_id(current_user.id)
+      .where_account(asset_accounts)
+
+    html IndexPage, account_balance_report: report
   end
 end

@@ -13,7 +13,15 @@ class Transaction < BaseModel
     has_many tags : Tag, through: [:transaction_tags, :tag]
   end
 
-  def exchange_rate : Float64
-    from_amount / to_amount
+  def type(subject : Account) : String
+    if from_account.type.name == "Income"
+      "Income"
+    elsif to_account.type.name == "Expense"
+      "Expense"
+    elsif from_account == subject
+      "Transfer from"
+    else
+      "Transfer to"
+    end
   end
 end

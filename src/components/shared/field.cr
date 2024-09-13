@@ -36,14 +36,14 @@ class Shared::Field(T) < BaseComponent
   needs label_text : String?
 
   def render(&)
-    label_for attribute, label_text
+    label_for attribute, label_text, class: "form-label"
 
     # You can add more default options here. For example:
     #
     #    tag_defaults field: attribute, class: "input"
     #
     # Will add the class "input" to the generated HTML.
-    tag_defaults field: attribute do |tag_builder|
+    tag_defaults field: attribute, class: "form-control" do |tag_builder|
       yield tag_builder
     end
 
