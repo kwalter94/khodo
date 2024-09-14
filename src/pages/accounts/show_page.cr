@@ -11,7 +11,7 @@ class Accounts::ShowPage < MainLayout
     div class: "row" { render_transactions }
   end
 
-  def render_actions
+  private def render_actions
     section class: "col-1 offset-md-11" do
       div class: "dropdown" do
         button(
@@ -34,7 +34,7 @@ class Accounts::ShowPage < MainLayout
     end
   end
 
-  def render_account_fields
+  private def render_account_fields
     div class: "col col-6" do
       table class: "table" do
         tbody do
@@ -55,9 +55,9 @@ class Accounts::ShowPage < MainLayout
     end
   end
 
-  def render_transactions
+  private def render_transactions
     div class: "col col-12" do
-      table class: "table table-dark table-bordered" do
+      table class: "table table-bordered" do
         thead do
           th { text "ID" }
           th { text "Date" }
@@ -70,35 +70,18 @@ class Accounts::ShowPage < MainLayout
 
         tbody do
           transactions.each do |tx|
-            case tx.type(account)
-            when "Expense"
-              tx_amount = tx.from_amount
-              tx_target_account = tx.to_account
-              tx_type = "Expense"
-            when "Income"
-              tx_amount = tx.to_amount
-              tx_target_account = tx.from_account
-              tx_type = "Income"
-            when "Transfer from"
-              tx_amount = tx.from_amount
-              tx_target_account = tx.to_account
-              tx_type = "Transfer from"
-            else
-              tx_amount = tx.to_amount
-              tx_target_account = tx.from_account
-              tx_type = "Transfer to"
-            end
+            row = format_transaction(tx)
 
-            tr class: tx_type == "Income" || tx_type == "Transfer to" ? "table-success" : "table-danger" do
+            tr class: row.css_class do
               td { link "##{tx.id}", to: Transactions::Show.with(tx.id) }
-              td { text tx.transaction_date.to_s("%Y-%m-%d") }
-              td { text tx_type }
-              td { text tx.description }
-              td { text format_money(tx_amount) }
-              td { link tx_target_account.name, to: Accounts::Show.with(tx_target_account.id) }
+              td { text row.date }
+              td { text row.type }
+              td { text row.description }
+              td { text row.amount }
+              td { link row.counterpart.name, to: Accounts::Show.with(row.counterpart.id) }
               td do
                 tx.tags.each do |tag|
-                  span class: "badge bg-success", style: "padding-right: 2px" { text tag.name }
+                  link tag.name, to: Tags::Show.with(tag.id), class: "badge bg-primary", style: "padding-right: 2px"
                 end
               end
             end
@@ -108,17 +91,61 @@ class Accounts::ShowPage < MainLayout
     end
   end
 
-  def account_property(property_name : String, value : String)
+  private def account_property(property_name : String, value : String)
     tr do
       th scope: "row" { text property_name }
       td { text value }
     end
   end
 
-  def format_money(amount : Float64, currency : Currency? = nil) : String
+  private def format_money(amount : Float64, currency : Currency? = nil) : String
     symbol = currency.try(&.symbol) || ""
-    return "(#{symbol}#{amount.abs})" if amount.negative?
+    formatted = "#{symbol} #{amount.abs.format(decimal_places: 2)}".strip
 
-    "#{symbol}#{amount}"
+    return "(#{formatted})" if amount.negative?
+
+    formatted
+  end
+
+  private record TransactionRow,
+    date : String,
+    type : String,
+    description : String,
+    amount : String,
+    counterpart : Account,
+    css_class : String
+
+  private def format_transaction(tx : Transaction) : TransactionRow
+    case tx.type(account)
+    when "Expense"
+      amount = format_money(-tx.from_amount)
+      counterpart = tx.to_account
+      type = "Expense"
+      css_class = "table-danger"
+    when "Income"
+      amount = format_money(tx.to_amount)
+      counterpart = tx.from_account
+      type = "Income"
+      css_class = "table-success"
+    when "Transfer"
+      amount = format_money(-tx.from_amount)
+      counterpart = tx.to_account
+      type = "Transfer"
+      css_class = "table-warning"
+    else # Receipt
+      amount = format_money(tx.to_amount)
+      counterpart = tx.from_account
+      type = "Receipt"
+      css_class = "table-info"
+    end
+
+    TransactionRow.new(
+      date: tx.transaction_date.to_s("%Y-%m-%d"),
+      type: type,
+      description: tx.description,
+      amount: amount,
+      counterpart: counterpart,
+      css_class: css_class,
+    )
   end
 end

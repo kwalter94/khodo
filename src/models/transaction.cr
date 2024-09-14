@@ -19,9 +19,9 @@ class Transaction < BaseModel
     elsif to_account.type.name == "Expense"
       "Expense"
     elsif from_account == subject
-      "Transfer from"
+      "Transfer"
     else
-      "Transfer to"
+      "Receipt"
     end
   end
 end
