@@ -27,8 +27,11 @@ class Accounts::Show < BrowserAction
       .or(&.from_account_id(account.id))
       .transaction_date.desc_order
 
+    pages, transactions = paginate(transactions, per_page: 10)
+
     html ShowPage,
       account: account,
+      pages: pages,
       balance: account_balance,
       transactions: transactions
   end

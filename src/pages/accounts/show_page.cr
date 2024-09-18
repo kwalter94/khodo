@@ -2,17 +2,19 @@ class Accounts::ShowPage < MainLayout
   needs account : Account
   needs balance : AccountBalanceReport
   needs transactions : TransactionQuery
+  needs pages : Lucky::Paginator
 
   def content
-    div class: "row" { link "Back to all Accounts", Accounts::Index }
-    div class: "row" { h1 account.name.to_s }
     div class: "row" { render_actions }
     div class: "row" { render_account_fields }
     div class: "row" { render_transactions }
+    div class: "row" { render_transactions_paginator }
   end
 
   private def render_actions
-    section class: "col-1 offset-md-11" do
+    h1 account.name, class: "col-11"
+
+    section class: "col-1" do
       div class: "dropdown" do
         button(
           class: "btn btn-primary dropdown-toggle",
@@ -104,6 +106,12 @@ class Accounts::ShowPage < MainLayout
           end
         end
       end
+    end
+  end
+
+  def render_transactions_paginator
+    div class: "row" do
+      mount Lucky::Paginator::BootstrapNav, pages
     end
   end
 
