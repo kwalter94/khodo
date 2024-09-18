@@ -19,8 +19,10 @@ abstract class AuthLayout
       mount Shared::LayoutHead, page_title: page_title
 
       body do
-        mount Shared::FlashMessages, context.flash
-        content
+        div class: "container" do
+          mount Shared::FlashMessages, context.flash
+          content
+        end
       end
     end
   end

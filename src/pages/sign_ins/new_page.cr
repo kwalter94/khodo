@@ -2,18 +2,27 @@ class SignIns::NewPage < AuthLayout
   needs operation : SignInUser
 
   def content
-    h1 "Sign In"
+    div class: "row" { h1 "Sign In", class: "col-12" }
     render_sign_in_form(@operation)
   end
 
   private def render_sign_in_form(op)
-    form_for SignIns::Create do
-      sign_in_fields(op)
-      submit "Sign In", flow_id: "sign-in-button"
+    div class: "row" do
+      div class: "col-12" do
+        form_for SignIns::Create, class: "form" do
+          sign_in_fields(op)
+          submit "Sign In", class: "btn btn-primary", flow_id: "sign-in-button"
+        end
+      end
     end
-    link "Reset password", to: PasswordResetRequests::New
-    text " | "
-    link "Sign up", to: SignUps::New
+
+    div class: "row" do
+      div class: "col-3" do
+        link "Reset password", to: PasswordResetRequests::New
+        text " | "
+        link "Sign up", to: SignUps::New
+      end
+    end
   end
 
   private def sign_in_fields(op)
