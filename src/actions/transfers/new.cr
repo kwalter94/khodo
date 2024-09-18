@@ -8,6 +8,8 @@ class Transfers::New < BrowserAction
       .owner_id(current_user.id)
       .find(account_id)
 
-    html NewPage, operation: SaveTransfer.new(account: account, owner: current_user)
+    html NewPage,
+      operation: SaveTransaction.new(from_account_id: account.id, owner: current_user),
+      account: account
   end
 end

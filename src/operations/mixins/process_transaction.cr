@@ -2,7 +2,7 @@ module ProcessTransaction
   macro included
     needs owner : User
 
-    permit_columns description, transaction_date
+    permit_columns description, transaction_date, external_id
     attribute tags : Array(Int64)
 
     before_save do
@@ -31,8 +31,8 @@ module ProcessTransaction
     validate_required to_amount
     validate_required transaction_date
 
-    validate_numeric from_amount, greater_than: 0.to_f64
-    validate_numeric to_amount, greater_than: 0.to_f64
+    validate_numeric from_amount, at_least: 0.01.to_f64
+    validate_numeric to_amount, at_least: 0.01.to_f64
 
     validate_source_and_destination_accounts
     validate_accounts_ownership

@@ -2,6 +2,7 @@ class Tag < BaseModel
   table do
     column name : String
     column description : String?
+    column external_id : String?
 
     belongs_to owner : User
 

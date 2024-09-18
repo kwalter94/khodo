@@ -3,7 +3,7 @@ class SaveExpense < Transaction::SaveOperation
 
   needs account : Account
 
-  permit_columns description, transaction_date
+  permit_columns description, transaction_date, external_id
   attribute amount : Float64
 
   before_save do
@@ -28,7 +28,7 @@ class SaveExpense < Transaction::SaveOperation
     return account if account
 
     SaveAccount.create!(
-      name: "#{currency.name} expense",
+      name: "#{currency.name} Expenses",
       type_id: expense_type.id,
       currency_id: currency.id,
       owner: owner,

@@ -1,5 +1,6 @@
 class Transaction < BaseModel
   table do
+    column external_id : String?
     column description : String
     column from_amount : Float64
     column to_amount : Float64
@@ -14,14 +15,18 @@ class Transaction < BaseModel
   end
 
   def type(subject : Account) : String
-    if from_account.type.name == "Income"
-      "Income"
-    elsif to_account.type.name == "Expense"
+    if subject == from_account && to_account.type.name == "Expense"
       "Expense"
-    elsif from_account == subject
-      "Transfer"
-    else
+    elsif subject == to_account && from_account.type.name == "Income"
+      "Income"
+    elsif subject.type.name == "Asset" || subject.type.name == "Liability"
+      subject == from_account ? "Transfer from" : "Transfer to"
+    elsif subject.type.name == "Expense"
+      "Payment"
+    elsif subject.type.name == "Income"
       "Receipt"
+    else
+      "Unknown"
     end
   end
 end

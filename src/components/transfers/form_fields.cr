@@ -1,5 +1,6 @@
 class Transfers::FormFields < BaseComponent
-  needs operation : SaveTransfer
+  needs account : Account
+  needs operation : SaveTransaction
 
   def render
     mount Shared::Field, operation.description do |html|
@@ -8,20 +9,33 @@ class Transfers::FormFields < BaseComponent
 
     mount Shared::Field, operation.transaction_date, &.date_input(attrs: [:required])
 
-    mount Shared::Field, operation.to_account_id do |html|
-      html.select_input do
-        options = operation
-          .current_user_accounts
-          .map { |account| {account.display_name, account.id} }
-          .select { |_, account_id| account_id != operation.account.id }
-
-        options_for_select operation.to_account_id, options
+    if account.id == operation.record.try(&.from_account_id)
+      mount Shared::Field, operation.from_account_id, label_text: "From account" do |html|
+        html.select_input(attrs: [:disabled]) do
+          options_for_select operation.from_account_id, [{account.display_name, account.id}]
+        end
       end
+      mount Shared::Field, operation.from_amount, label_text: "From amount (#{account.currency.symbol})", &.number_input(min: 0)
+    else
+      mount Shared::Field, operation.from_account_id do |html|
+        html.select_input { options_for_select operation.from_account_id, account_select_options }
+      end
+      mount Shared::Field, operation.from_amount, &.number_input(min: 0)
     end
 
-    mount Shared::Field, operation.from_amount, label_text: "From amount (#{operation.account.currency.symbol})", &.number_input(min: 0)
-
-    mount Shared::Field, operation.to_amount, &.number_input(min: 0)
+    if account.id == operation.record.try(&.to_account_id)
+      mount Shared::Field, operation.to_account_id do |html|
+        html.select_input(attrs: [:disabled], label_text: "To account (#{account.currency.symbol})") do
+          options_for_select operation.to_account_id, [{account.display_name, account.id}]
+        end
+      end
+      mount Shared::Field, operation.to_amount, label_text: "To account (#{account.currency.symbol})", &.number_input(min: 0)
+    else
+      mount Shared::Field, operation.to_account_id do |html|
+        html.select_input { options_for_select operation.to_account_id, account_select_options }
+      end
+      mount Shared::Field, operation.to_amount, &.number_input(min: 0)
+    end
 
     mount Shared::Field, operation.tags do |html|
       html.multi_select_input(attrs: [:required]) do
@@ -29,5 +43,14 @@ class Transfers::FormFields < BaseComponent
         options_for_select operation.tags, options
       end
     end
+  end
+
+  @account_select_options : Array(Tuple(String, Int64))?
+
+  def account_select_options : Array(Tuple(String, Int64))
+    @account_select_options ||= operation
+      .current_user_accounts
+      .map { |account| {account.display_name, account.id} }
+      .select { |_, account_id| account_id != account.id }
   end
 end

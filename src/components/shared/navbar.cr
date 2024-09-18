@@ -30,6 +30,9 @@ class Shared::Navbar < BaseComponent
               link "Transactions", to: Transactions::Index, class: "nav-link"
             end
             li class: "nav-item" do
+              link "Currencies", to: Currencies::Index, class: "nav-link"
+            end
+            li class: "nav-item" do
               link "Tags", to: Tags::Index, class: "nav-link"
             end
           end
@@ -42,9 +45,7 @@ class Shared::Navbar < BaseComponent
               href: "#",
               id: "navbarDropdown",
               role: "button",
-            ) do
-              text current_user.email
-            end
+            ) { text current_user.email }
             ul aria_labelledby: "navbarDropdown", class: "dropdown-menu" do
               li do
                 a "Settings", class: "dropdown-item", href: "#"

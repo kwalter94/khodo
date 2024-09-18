@@ -19,13 +19,12 @@ class Accounts::Show < BrowserAction
 
     transactions = TransactionQuery
       .new
-      .preload_from_account(&.preload_type)
-      .preload_to_account(&.preload_type)
+      .preload_from_account { |account_query| account_query.preload_type.preload_currency }
+      .preload_to_account { |account_query| account_query.preload_type.preload_currency }
       .preload_tags
       .owner_id(current_user.id)
       .to_account_id(account.id)
       .or(&.from_account_id(account.id))
-      .transaction_date.gte(start_date)
       .transaction_date.desc_order
 
     html ShowPage,

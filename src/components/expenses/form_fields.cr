@@ -8,6 +8,8 @@ class Expenses::FormFields < BaseComponent
 
     mount Shared::Field, operation.transaction_date, &.date_input(attrs: [:required])
 
+    mount Shared::DummyField, label_text: "From account", input_value: operation.account.name
+
     mount Shared::Field,
       operation.amount,
       label_text: "Amount (#{operation.account.currency.symbol})", &.number_input(min: 0)
