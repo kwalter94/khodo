@@ -3,7 +3,7 @@ class Shared::FlashMessages < BaseComponent
 
   def render
     flash.each do |flash_type, flash_message|
-      div class: "flash-#{flash_type}", flow_id: "flash" do
+      div class: "flash-#{flash_type} alert alert-info", flow_id: "flash" do
         text flash_message
       end
     end

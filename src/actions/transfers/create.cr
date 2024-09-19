@@ -8,7 +8,7 @@ class Transfers::Create < BrowserAction
       .owner_id(current_user.id)
       .find(account_id)
 
-    SaveTransaction.create(params, owner: current_user) do |operation, transaction|
+    SaveTransaction.create(params, from_account_id: account.id, owner: current_user) do |operation, transaction|
       if transaction
         flash.success = "Transfer successful"
         redirect Accounts::Show.with(account_id)

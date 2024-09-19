@@ -10,9 +10,9 @@ class Income::FormFields < BaseComponent
 
     mount Shared::DummyField, label_text: "To account", input_value: operation.account.name
 
-    mount Shared::Field,
-      operation.amount,
-      label_text: "Amount (#{operation.account.currency.symbol})", &.number_input(min: 0)
+    mount Shared::Field, operation.amount, label_text: "Amount (#{operation.account.currency.symbol})" do |input|
+      input.number_input(min: "0.01", step: "0.01")
+    end
 
     mount Shared::Field, operation.tags do |html|
       html.multi_select_input do

@@ -48,7 +48,7 @@ module ProcessTransaction
   end
 
   def current_user_tags : Enumerable(Tag)
-    TagQuery.new.owner_id(owner.id)
+    TagQuery.new.owner_id(owner.id).name.asc_order
   end
 
   private def validate_accounts_ownership
