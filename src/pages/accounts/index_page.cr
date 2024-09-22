@@ -12,7 +12,7 @@ class Accounts::IndexPage < MainLayout
 
   def render_report
     div class: "col col-12" do
-      table class: "table table-striped table-dark" do
+      table class: "table table-striped" do
         thead do
           th { text "Account" }
           th { text "Currency" }

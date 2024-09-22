@@ -10,6 +10,8 @@ class Accounts::Index < BrowserAction
       .preload_account
       .owner_id(current_user.id)
       .where_account(asset_accounts)
+      .currency_name.asc_order
+      .name.asc_order
 
     html IndexPage, account_balance_report: report
   end

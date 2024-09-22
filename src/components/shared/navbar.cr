@@ -29,11 +29,20 @@ class Shared::Navbar < BaseComponent
             li class: "nav-item" do
               link "Transactions", to: Transactions::Index, class: "nav-link"
             end
-            li class: "nav-item" do
-              link "Currencies", to: Currencies::Index, class: "nav-link"
-            end
-            li class: "nav-item" do
-              link "Tags", to: Tags::Index, class: "nav-link"
+            li class: "nav-item dropdown" do
+              a(
+                aria_expanded: "false",
+                class: "nav-link dropdown-toggle",
+                data_bs_toggle: "dropdown",
+                href: "#",
+                id: "metadata-dropdown",
+                role: "button",
+              ) { text "Metadata" }
+              ul aria_labelledby: "metadata-dropdown", class: "dropdown-menu" do
+                li { link "Currencies", to: Currencies::Index, class: "nav-link" }
+                li { link "Exchange Rates", to: ExchangeRates::Index, class: "nav-link" }
+                li { link "Tags", to: Tags::Index, class: "nav-link" }
+              end
             end
           end
 
@@ -43,12 +52,12 @@ class Shared::Navbar < BaseComponent
               class: "nav-link dropdown-toggle",
               data_bs_toggle: "dropdown",
               href: "#",
-              id: "navbarDropdown",
+              id: "user-dropdown",
               role: "button",
             ) { text current_user.email }
-            ul aria_labelledby: "navbarDropdown", class: "dropdown-menu" do
+            ul aria_labelledby: "user-dropdown", class: "dropdown-menu" do
               li do
-                a "Settings", class: "dropdown-item", href: "#"
+                link "Properties", to: UserProperties::Index, class: "dropdown-item"
               end
               li do
                 a "Security", class: "dropdown-item", href: "#"
