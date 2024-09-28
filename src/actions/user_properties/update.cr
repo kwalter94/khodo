@@ -1,14 +1,18 @@
 class UserProperties::Update < BrowserAction
-  put "/user_properties/:user_property_id" do
-    user_property = UserPropertyQuery.find(user_property_id)
-    SaveUserProperty.update(user_property, params) do |operation, updated_user_property|
+  put "/user_properties" do
+    user_properties = UserPropertiesQuery.new.user_id(current_user.id).first
+
+    SaveUserProperties.update(user_properties, params, user: current_user) do |operation, updated_user_properties|
       if operation.saved?
-        flash.success = "The record has been updated"
-        redirect Show.with(updated_user_property.id)
+        flash.success = "Properties updated"
       else
         flash.failure = "It looks like the form is not valid"
-        html EditPage, operation: operation, user_property: updated_user_property
       end
+
+      html EditPage,
+        operation: operation,
+        user_properties: updated_user_properties,
+        currencies: CurrencyQuery.new.owner_id(current_user.id)
     end
   end
 end

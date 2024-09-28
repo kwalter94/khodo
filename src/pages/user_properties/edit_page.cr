@@ -1,20 +1,21 @@
 class UserProperties::EditPage < MainLayout
-  needs operation : SaveUserProperty
-  needs user_property : UserProperty
-  quick_def page_title, "Edit UserProperty with id: #{user_property.id}"
+  needs operation : SaveUserProperties
+  needs user_properties : UserProperties
+  needs currencies : Enumerable(Currency)
+
+  quick_def page_title, "Edit Properties"
 
   def content
-    link "Back to all UserProperties", UserProperties::Index
-    h1 "Edit UserProperty with id: #{user_property.id}"
-    render_user_property_form(operation)
+    div class: "row" { h1 "Edit Properties" }
+    div class: "row" { render_user_property_form }
   end
 
-  def render_user_property_form(op)
-    form_for UserProperties::Update.with(user_property.id) do
+  def render_user_property_form
+    form_for UserProperties::Update do
       # Edit fields in src/components/user_properties/form_fields.cr
-      mount UserProperties::FormFields, op
+      mount UserProperties::FormFields, operation: operation, currencies: currencies
 
-      submit "Update", data_disable_with: "Updating..."
+      submit "Update", class: "btn btn-primary", data_disable_with: "Updating..."
     end
   end
 end

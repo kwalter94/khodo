@@ -1,8 +1,11 @@
 class UserProperties::Edit < BrowserAction
-  get "/user_properties/:user_property_id/edit" do
-    user_property = UserPropertyQuery.find(user_property_id)
+  get "/user_properties" do
+    user_properties = UserPropertiesQuery.new.user_id(current_user.id).first
+    currencies = CurrencyQuery.new.owner_id(current_user.id)
+
     html EditPage,
-      operation: SaveUserProperty.new(user_property),
-      user_property: user_property
+      currencies: currencies,
+      operation: SaveUserProperties.new(user_properties, user: current_user),
+      user_properties: user_properties
   end
 end

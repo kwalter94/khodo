@@ -12,7 +12,7 @@ class ExchangeRates::NewPage < MainLayout
       # Edit fields in src/components/exchange_rates/form_fields.cr
       mount ExchangeRates::FormFields, op
 
-      submit "Save", data_disable_with: "Saving..."
+      submit "Save", class: "btn btn-primary", data_disable_with: "Saving..."
     end
   end
 end

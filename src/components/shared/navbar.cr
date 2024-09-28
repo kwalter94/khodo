@@ -57,7 +57,7 @@ class Shared::Navbar < BaseComponent
             ) { text current_user.email }
             ul aria_labelledby: "user-dropdown", class: "dropdown-menu" do
               li do
-                link "Properties", to: UserProperties::Index, class: "dropdown-item"
+                link "Properties", to: UserProperties::Edit, class: "dropdown-item"
               end
               li do
                 a "Security", class: "dropdown-item", href: "#"
