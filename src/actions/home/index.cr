@@ -24,6 +24,24 @@ class Home::Index < BrowserAction
       .try(&.currency)
     currency ||= fallback_currency
 
-    html Home::ShowPage, currency: currency
+    assets_query = LocalisedCumulativeAssetsReportQuery
+      .new
+      .owner_id(current_user.id)
+      .month.desc_order
+      .total_assets.desc_order
+
+    total_assets, new_assets = net_assets(assets_query)
+
+    html Home::IndexPage,
+      currency: currency,
+      assets_query: assets_query,
+      total_assets: total_assets,
+      new_assets: new_assets
+  end
+
+  private def net_assets(assets_query : LocalisedCumulativeAssetsReportQuery) : Tuple(Float64, Float64)
+    assets_query
+      .period(1)
+      .reduce({0.0.to_f64, 0.0.to_f64}) { |accum, asset| {asset.total_assets + accum[0], asset.net_receipts} }
   end
 end

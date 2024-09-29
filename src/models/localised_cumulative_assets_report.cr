@@ -11,5 +11,6 @@ class LocalisedCumulativeAssetsReport < BaseModel
     column cumulative_deductions : Float64
     column total_assets : Float64
     column period : Int64
+    belongs_to owner : User
   end
 end
