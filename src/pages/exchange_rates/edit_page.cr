@@ -1,6 +1,8 @@
 class ExchangeRates::EditPage < MainLayout
   needs operation : SaveExchangeRate
   needs exchange_rate : ExchangeRate
+  needs currencies : Enumerable(Currency)
+
   quick_def page_title, "Edit ExchangeRate with id: #{exchange_rate.id}"
 
   def content
@@ -12,7 +14,7 @@ class ExchangeRates::EditPage < MainLayout
   def render_exchange_rate_form(op)
     form_for ExchangeRates::Update.with(exchange_rate.id) do
       # Edit fields in src/components/exchange_rates/form_fields.cr
-      mount ExchangeRates::FormFields, op
+      mount ExchangeRates::FormFields, op, currencies: currencies
 
       submit "Update", data_disable_with: "Updating..."
     end
