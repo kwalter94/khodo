@@ -2,6 +2,8 @@
   "license": "UNLICENSED",
   "private": true,
   "dependencies": {
+    "@hotwired/stimulus": "^3.2.2",
+    "@hotwired/stimulus-webpack-helpers": "^1.0.1",
     "@popperjs/core": "^2.11.8",
     "@rails/ujs": "^7.1.0",
     "bootstrap": "^5.3.3",

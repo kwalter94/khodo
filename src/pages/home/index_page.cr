@@ -5,6 +5,11 @@ class Home::IndexPage < MainLayout
   needs new_assets : Float64
 
   def content
+    net_worth_cards_section
+    growth_charts_section
+  end
+
+  private def net_worth_cards_section
     div class: "row" do
       div class: "col-md-3" do
         number_card label: "Net Worth", number: total_assets, change: new_assets, color: "bg-primary"
@@ -20,6 +25,15 @@ class Home::IndexPage < MainLayout
       end
       div class: "col-md-3" do
         number_card label: "Liabilities", number: 0.0, change: 0.0, color: "bg-danger"
+      end
+    end
+  end
+
+  private def growth_charts_section
+    div class: "row" do
+      div class: "col-md-6 chart", data_controller: "asset-growth" do
+        input type: "text"
+        button "Greet", class: "btn btn-primary"
       end
     end
   end
