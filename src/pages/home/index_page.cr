@@ -31,9 +31,8 @@ class Home::IndexPage < MainLayout
 
   private def growth_charts_section
     div class: "row" do
-      div class: "col-md-6 chart", data_controller: "asset-growth" do
-        input type: "text"
-        button "Greet", class: "btn btn-primary"
+      div class: "col-md-6 chart" do
+        empty_tag "canvas", class: "chart", data_controller: "asset-growth"
       end
     end
   end
