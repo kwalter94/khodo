@@ -6,18 +6,11 @@ import Rails from "@rails/ujs";
 Rails.start();
 
 import bootstrap from "bootstrap";
+import { Chart } from "chart.js/auto";  // Autoload chartjs
+Chart.defaults.plugins.legend.position = "bottom";
+
 import { Application } from "@hotwired/stimulus";
 import { definitionsFromContext } from "@hotwired/stimulus-webpack-helpers";
-
-// For ze tree shaking
-import { BarController, BarElement, CategoryScale, Chart, LinearScale } from "chart.js";
-Chart.register(
-  BarElement,
-  BarController,
-  CategoryScale,
-  LinearScale,
-);
-
 window.Stimulus = Application.start();
 const context = require.context("./controllers", true, /\.js$/)
 Stimulus.load(definitionsFromContext(context))

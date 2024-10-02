@@ -28,7 +28,7 @@ class Home::Index < BrowserAction
       .new
       .owner_id(current_user.id)
       .month.desc_order
-      .total_assets.desc_order
+      .total_assets.asc_order
 
     total_assets, new_assets = net_assets(assets_query)
 

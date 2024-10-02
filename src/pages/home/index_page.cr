@@ -11,34 +11,39 @@ class Home::IndexPage < MainLayout
 
   private def net_worth_cards_section
     div class: "row" do
-      div class: "col-md-3" do
+      div class: "col col-lg-3 col-md-4 col-12" do
         number_card label: "Net Worth", number: total_assets, change: new_assets, color: "bg-primary"
       end
-      div class: "col-md-1 align-self-center" do
+      div class: "col col-lg-2 d-none d-lg-block align-self-center" do
         para class: "h1 text-center" { text "=" }
       end
-      div class: "col-md-3" do
+      div class: "col col-lg-3 col-md-4 col-12" do
         number_card label: "Assets", number: total_assets, change: new_assets, color: "bg-success"
       end
-      div class: "col-md-1 align-self-center" do
+      div class: "col col-lg-1 d-none d-lg-block align-self-center" do
         para class: "h1 text-center" { text "-" }
       end
-      div class: "col-md-3" do
+      div class: "col col-lg-3 col-md-4 col-12" do
         number_card label: "Liabilities", number: 0.0, change: 0.0, color: "bg-danger"
       end
     end
   end
 
   private def growth_charts_section
-    div class: "row" do
-      div class: "col-md-6 chart" do
-        empty_tag "canvas", class: "chart", data_controller: "asset-growth"
+    div class: "row", data_controller: "assets-charts" do
+      div class: "col col-lg-6 col-12" do
+        h6 "Asset Distribution", class: "text-center"
+        empty_tag "canvas", id: "assets-distribution", class: "chart"
+      end
+      div class: "col col-lg-6 col-12" do
+        h6 "Asset Growth", class: "text-center"
+        empty_tag "canvas", id: "assets-growth", class: "chart"
       end
     end
   end
 
   private def number_card(label : String, number : Float64, change : Float64, color : String)
-    div class: "card #{color} text-white" do
+    div class: "card #{color} text-white", style: "margin: 5px" do
       div class: "card-body" do
         h5 class: "card-title" { text format_money(number, currency) }
         small class: "card-subtitle text-muted" do

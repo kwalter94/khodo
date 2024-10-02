@@ -2,7 +2,7 @@ class Shared::Navbar < BaseComponent
   needs current_user : User
 
   def render
-    nav class: "navbar navbar-expand-lg navbar-light bg-light" do
+    nav class: "navbar navbar-expand-lg navbar-dark bg-dark" do
       div class: "container-fluid" do
         link "Khodo", to: Home::Index, class: "navbar-brand"
 
@@ -50,7 +50,7 @@ class Shared::Navbar < BaseComponent
       div class: "nav-item dropdown" do
         a(
           aria_expanded: "false",
-          class: "nav-link dropdown-toggle",
+          class: "nav-link dropdown-toggle text-light",
           data_bs_toggle: "dropdown",
           href: "#",
           id: "user-dropdown",
