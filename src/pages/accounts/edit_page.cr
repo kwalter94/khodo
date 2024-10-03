@@ -14,7 +14,7 @@ class Accounts::EditPage < MainLayout
       # Edit fields in src/components/accounts/form_fields.cr
       mount Accounts::FormFields, op
 
-      submit "Update", data_disable_with: "Updating..."
+      submit "Update", class: "btn btn-primary col col-12", data_disable_with: "Updating..."
     end
   end
 end

@@ -16,7 +16,7 @@ class ExchangeRates::EditPage < MainLayout
       # Edit fields in src/components/exchange_rates/form_fields.cr
       mount ExchangeRates::FormFields, op, currencies: currencies
 
-      submit "Update", data_disable_with: "Updating..."
+      submit "Update", class: "btn btn-primary col col-12", data_disable_with: "Updating..."
     end
   end
 end
