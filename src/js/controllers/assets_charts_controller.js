@@ -3,11 +3,18 @@ import { Chart } from "chart.js";
 
 export default class extends Controller {
   connect() {
+    const params = new URLSearchParams(document.location.search);
+    this.currency_id = params.get("currency_id");
     this.load_report();
   }
 
   async load_report() {
-    const response = await fetch("/api/cumulative_assets_report");
+    let url = "/api/cumulative_assets_report";
+    if (this.currency_id) {
+      url = `${url}?currency_id=${this.currency_id}`;
+    }
+
+    const response = await fetch(url);
     if (response.status != 200) {
       const response_text = await response.text();
       console.error(`Failed to read cumulative_assets_report: ${response_text}`);

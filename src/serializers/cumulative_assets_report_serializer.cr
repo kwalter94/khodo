@@ -1,5 +1,5 @@
 class CumulativeAssetsReportSerializer < BaseSerializer
-  def initialize(@report : LocalisedCumulativeAssetsReport)
+  def initialize(@report : CumulativeAssetsReport)
   end
 
   def render

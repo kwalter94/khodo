@@ -1,2 +1,0 @@
-class LocalisedCumulativeAssetsReportQuery < LocalisedCumulativeAssetsReport::BaseQuery
-end

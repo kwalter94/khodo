@@ -12,5 +12,7 @@ class CumulativeAssetsReport < BaseModel
     column total_assets : Float64
     column period : Int64
     belongs_to owner : User
+    belongs_to currency : Currency
+    belongs_to account : Account
   end
 end

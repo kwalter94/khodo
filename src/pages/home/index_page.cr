@@ -1,6 +1,6 @@
 class Home::IndexPage < MainLayout
   needs currency : Currency
-  needs assets_query : LocalisedCumulativeAssetsReportQuery
+  needs assets_query : CumulativeAssetsReportQuery
   needs total_assets : Float64
   needs new_assets : Float64
 
@@ -11,19 +11,13 @@ class Home::IndexPage < MainLayout
 
   private def net_worth_cards_section
     div class: "row" do
-      div class: "col col-lg-3 col-md-4 col-12" do
+      div class: "col col-md-4 col-12" do
         number_card label: "Net Worth", number: total_assets, change: new_assets, color: "bg-primary"
       end
-      div class: "col col-lg-2 d-none d-lg-block align-self-center" do
-        para class: "h1 text-center" { text "=" }
-      end
-      div class: "col col-lg-3 col-md-4 col-12" do
+      div class: "col col-md-4 col-12" do
         number_card label: "Assets", number: total_assets, change: new_assets, color: "bg-success"
       end
-      div class: "col col-lg-1 d-none d-lg-block align-self-center" do
-        para class: "h1 text-center" { text "-" }
-      end
-      div class: "col col-lg-3 col-md-4 col-12" do
+      div class: "col col-md-4 col-12" do
         number_card label: "Liabilities", number: 0.0, change: 0.0, color: "bg-danger"
       end
     end

@@ -6433,41 +6433,47 @@ var _default = /*#__PURE__*/function (_Controller) {
   return _createClass(_default, [{
     key: "connect",
     value: function connect() {
+      var params = new URLSearchParams(document.location.search);
+      this.currency_id = params.get("currency_id");
       this.load_report();
     }
   }, {
     key: "load_report",
     value: function () {
       var _load_report = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee() {
-        var response, response_text, report;
+        var url, response, response_text, report;
         return _regeneratorRuntime().wrap(function _callee$(_context) {
           while (1) switch (_context.prev = _context.next) {
             case 0:
-              _context.next = 2;
-              return fetch("/api/cumulative_assets_report");
-            case 2:
+              url = "/api/cumulative_assets_report";
+              if (this.currency_id) {
+                url = "".concat(url, "?currency_id=").concat(this.currency_id);
+              }
+              _context.next = 4;
+              return fetch(url);
+            case 4:
               response = _context.sent;
               if (!(response.status != 200)) {
-                _context.next = 9;
+                _context.next = 11;
                 break;
               }
-              _context.next = 6;
+              _context.next = 8;
               return response.text();
-            case 6:
+            case 8:
               response_text = _context.sent;
               console.error("Failed to read cumulative_assets_report: ".concat(response_text));
               return _context.abrupt("return");
-            case 9:
-              _context.next = 11;
-              return response.json();
             case 11:
+              _context.next = 13;
+              return response.json();
+            case 13:
               report = _context.sent.filter(function (_ref) {
                 var period = _ref.period;
                 return period <= 12;
               });
               this.plotAssetsDistributionChart(report);
               this.plotAssetsGrowthChart(report);
-            case 14:
+            case 16:
             case "end":
               return _context.stop();
           }
