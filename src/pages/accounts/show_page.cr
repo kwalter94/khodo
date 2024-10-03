@@ -86,7 +86,7 @@ class Accounts::ShowPage < MainLayout
               end
               td do
                 tx.tags.each do |tag|
-                  link tag.name, to: Tags::Show.with(tag.id), class: "badge bg-primary", style: "padding-right: 2px"
+                  link tag.name, to: Tags::Show.with(tag.id), class: "badge bg-primary"
                 end
               end
               td do
