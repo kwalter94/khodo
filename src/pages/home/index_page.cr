@@ -6,7 +6,8 @@ class Home::IndexPage < MainLayout
 
   def content
     net_worth_cards_section
-    growth_charts_section
+    asset_charts_section
+    savings_charts_section
   end
 
   private def net_worth_cards_section
@@ -23,12 +24,13 @@ class Home::IndexPage < MainLayout
     end
   end
 
-  private def growth_charts_section
+  private def asset_charts_section
     div class: "row", data_controller: "assets-charts" do
       div class: "col col-lg-6 col-12" do
         h6 "Asset Distribution", class: "text-center"
         empty_tag "canvas", id: "assets-distribution", class: "chart"
       end
+
       div class: "col col-lg-6 col-12" do
         h6 "Asset Growth", class: "text-center"
         empty_tag "canvas", id: "assets-growth", class: "chart"
@@ -36,8 +38,22 @@ class Home::IndexPage < MainLayout
     end
   end
 
+  private def savings_charts_section
+    div class: "row", data_controller: "savings-charts" do
+      div class: "col col-lg-6 col-12" do
+        h6 "Income vs Expenses", class: "text-center"
+        empty_tag "canvas", id: "income-vs-expenses", class: "chart"
+      end
+
+      div class: "col col-lg-6 col-12" do
+        h6 "Savings", class: "text-center"
+        empty_tag "canvas", id: "savings", class: "chart"
+      end
+    end
+  end
+
   private def number_card(label : String, number : Float64, change : Float64, color : String)
-    div class: "card #{color} text-white", style: "margin: 5px" do
+    div class: "card #{color} text-white", style: "margin: 5px; min-height: 160px" do
       div class: "card-body" do
         h5 class: "card-title" { text format_money(number, currency) }
         small class: "card-subtitle text-muted" do

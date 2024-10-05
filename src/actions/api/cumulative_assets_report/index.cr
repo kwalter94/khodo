@@ -1,16 +1,12 @@
-class CumulativeAssetsReport::Index < BrowserAction
+class Api::CumulativeAssetsReport::Index < BrowserAction
   param currency_id : Int64? = nil
 
   get "/api/cumulative_assets_report" do
     currency = currency_id.try do |id|
-      CurrencyQuery
-        .new
-        .owner_id(current_user.id)
-        .id(id)
-        .first?
+      CurrencyQuery.new.owner_id(current_user.id).id(id).first
     end
 
-    currency = CurrencyQuery.find_user_default_currency(current_user.id) if currency.nil?
+    currency ||= CurrencyQuery.find_user_default_currency(current_user.id)
 
     query = CumulativeAssetsReportQuery
       .new
