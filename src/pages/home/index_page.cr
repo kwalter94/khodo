@@ -12,7 +12,7 @@ class Home::IndexPage < MainLayout
   end
 
   private def render_menu
-    div class: "col col-4 offset-lg-8" do
+    div class: "col col-lg-4 offset-lg-8" do
       div class: "input-group mb-2" do
         span class: "input-group-text" { text "Currency" }
         tag(
