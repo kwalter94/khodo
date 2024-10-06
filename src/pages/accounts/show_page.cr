@@ -12,9 +12,9 @@ class Accounts::ShowPage < MainLayout
   end
 
   private def render_actions
-    h1 account.name, class: "col-11"
+    h1 account.name, class: "col-8"
 
-    section class: "col-1" do
+    section class: "col-2 offset-2" do
       div class: "dropdown" do
         button(
           class: "btn btn-primary dropdown-toggle",
@@ -37,7 +37,7 @@ class Accounts::ShowPage < MainLayout
   end
 
   private def render_account_fields
-    div class: "col col-6" do
+    div class: "col col-lg-6 col-md-12" do
       table class: "table" do
         tbody do
           account_property "Currency:", "#{account.currency.name} (#{account.currency.symbol})"
@@ -45,7 +45,7 @@ class Accounts::ShowPage < MainLayout
         end
       end
     end
-    div class: "col col-6" do
+    div class: "col col-lg-6 col-md-12" do
       table class: "table" do
         tbody do
           account_property "Current Balance:", format_money(balance.balance, account.currency)
@@ -118,7 +118,7 @@ class Accounts::ShowPage < MainLayout
   private def account_property(property_name : String, value : String)
     tr do
       th scope: "row" { text property_name }
-      td { text value }
+      td style: "text-align: right" { text value }
     end
   end
 
