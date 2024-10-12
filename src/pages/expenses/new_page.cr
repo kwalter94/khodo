@@ -11,7 +11,9 @@ class Expenses::NewPage < MainLayout
       form_for Expenses::Create.with(account_id: operation.account.id) do
         mount Expenses::FormFields, operation
 
-        submit "Save", data_disable_with: "Saving...", class: "btn btn-primary"
+        div class: "d-grid gap-2" do
+          submit "Save", data_disable_with: "Saving...", class: "btn btn-primary"
+        end
       end
     end
   end

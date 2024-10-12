@@ -13,21 +13,23 @@ class Accounts::IndexPage < MainLayout
 
   def render_report
     div class: "col col-12" do
-      table class: "table table-striped" do
-        thead do
-          th { text "Account" }
-          th { text "Currency" }
-          th { text "Net Additions (Last Month)" }
-          th { text "Balance" }
-        end
+      div class: "table-responsive" do
+        table class: "table table-striped" do
+          thead do
+            th { text "Account" }
+            th { text "Currency" }
+            th { text "Net Additions (Last Month)" }
+            th { text "Balance" }
+          end
 
-        tbody do
-          account_balance_report.each do |row|
-            tr do
-              td { link row.name, Accounts::Show.with(row.account) }
-              td { text row.currency_name }
-              td { text format_money(row.net_additions_last_month) }
-              td { text format_money(row.balance) }
+          tbody do
+            account_balance_report.each do |row|
+              tr do
+                td { link row.name, Accounts::Show.with(row.account) }
+                td { text row.currency_name }
+                td { text format_money(row.net_additions_last_month) }
+                td { text format_money(row.balance) }
+              end
             end
           end
         end

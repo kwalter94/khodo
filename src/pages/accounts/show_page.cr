@@ -59,47 +59,49 @@ class Accounts::ShowPage < MainLayout
 
   private def render_transactions
     div class: "col col-12" do
-      table class: "table table-bordered table-striped" do
-        thead do
-          th { text "Date" }
-          th { text "Type" }
-          th { text "Description" }
-          th { text "Amount (#{account.currency.symbol})" }
-          th { text "Counterpart" }
-          th { text "Tags" }
-          th { text "Actions" }
-        end
+      div class: "table-responsive" do
+        table class: "table table-bordered table-striped" do
+          thead do
+            th { text "Date" }
+            th { text "Type" }
+            th { text "Description" }
+            th { text "Amount (#{account.currency.symbol})" }
+            th { text "Counterpart" }
+            th { text "Tags" }
+            th { text "Actions" }
+          end
 
-        tbody do
-          transactions.each do |tx|
-            row = format_transaction(tx)
+          tbody do
+            transactions.each do |tx|
+              row = format_transaction(tx)
 
-            tr do
-              td { text row.date }
-              td(class: row.css_class) { text row.type }
-              td { text row.description }
-              td(class: row.css_class) { text row.amount }
-              td do
-                text row.counterpart_amount
-                text ["Expense", "Transfer from", "Receipt"].includes?(row.type) ? " to " : " from "
-                link row.counterpart.name, to: Accounts::Show.with(row.counterpart.id)
-              end
-              td do
-                tx.tags.each do |tag|
-                  link tag.name, to: Tags::Show.with(tag.id), class: "badge bg-primary"
+              tr do
+                td { text row.date }
+                td(class: row.css_class) { text row.type }
+                td { text row.description }
+                td(class: row.css_class) { text row.amount }
+                td do
+                  text row.counterpart_amount
+                  text ["Expense", "Transfer from", "Receipt"].includes?(row.type) ? " to " : " from "
+                  link row.counterpart.name, to: Accounts::Show.with(row.counterpart.id)
                 end
-              end
-              td do
-                div class: "btn-group", role: "group", aria_label: "Actions" do
-                  if row.type == "Expense"
-                    link "Edit", to: Expenses::Edit.with(tx.id, account_id: account.id), class: "btn btn-primary"
-                  elsif row.type == "Income"
-                    link "Edit", to: Income::Edit.with(tx.id, account_id: account.id), class: "btn btn-primary"
-                  elsif row.type == "Transfer to" || row.type == "Transfer from"
-                    link "Edit", to: Transfers::Edit.with(tx.id, account_id: account.id), class: "btn btn-primary"
+                td do
+                  tx.tags.each do |tag|
+                    link tag.name, to: Tags::Show.with(tag.id), class: "badge bg-primary"
                   end
+                end
+                td do
+                  div class: "btn-group", role: "group", aria_label: "Actions" do
+                    if row.type == "Expense"
+                      link "Edit", to: Expenses::Edit.with(tx.id, account_id: account.id), class: "btn btn-primary"
+                    elsif row.type == "Income"
+                      link "Edit", to: Income::Edit.with(tx.id, account_id: account.id), class: "btn btn-primary"
+                    elsif row.type == "Transfer to" || row.type == "Transfer from"
+                      link "Edit", to: Transfers::Edit.with(tx.id, account_id: account.id), class: "btn btn-primary"
+                    end
 
-                  link "Delete", Transactions::Delete.with(tx.id, account_id: account.id), data_confirm: "Are you sure?", class: "btn btn-danger"
+                    link "Delete", Transactions::Delete.with(tx.id, account_id: account.id), data_confirm: "Are you sure?", class: "btn btn-danger"
+                  end
                 end
               end
             end

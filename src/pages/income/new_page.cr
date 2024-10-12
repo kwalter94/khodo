@@ -7,11 +7,13 @@ class Income::NewPage < MainLayout
   end
 
   def render_form
-    div class: "col-12" do
+    div class: "col col-12" do
       form_for Income::Create.with(account_id: operation.account.id) do
         mount Income::FormFields, operation
 
-        submit "Save", data_disable_with: "Saving...", class: "btn btn-primary"
+        div class: "d-grid gap-2" do
+          submit "Save", data_disable_with: "Saving...", class: "btn btn-primary"
+        end
       end
     end
   end

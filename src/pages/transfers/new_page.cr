@@ -11,7 +11,9 @@ class Transfers::NewPage < MainLayout
     form_for Transfers::Create.with(account_id: account.id) do
       mount Transfers::FormFields, operation: operation, account: account
 
-      submit "Save", class: "btn btn-primary", data_disable_with: "Saving..."
+      div class: "d-grid gap-2" do
+        submit "Save", class: "btn btn-primary", data_disable_with: "Saving..."
+      end
     end
   end
 end
