@@ -3,7 +3,6 @@ class Income::EditPage < MainLayout
   needs transaction : Transaction
 
   def content
-    link "Back to all Transactions", Transactions::Index
     h1 "Editing income receipt ##{transaction.id}"
     render_transaction_form(operation)
   end

@@ -28,7 +28,6 @@ class Shared::Navbar < BaseComponent
       ul class: "navbar-nav me-auto mb-2 mb-lg-0" do
         nav_link "Home", to: Home::Index
         nav_link "Accounts", to: Accounts::Index
-        nav_link "Transactions", to: Transactions::Index
 
         li class: "nav-item dropdown" do
           a(

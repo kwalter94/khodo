@@ -3,7 +3,6 @@ class Expenses::EditPage < MainLayout
   needs transaction : Transaction
 
   def content
-    link "Back to all Transactions", Transactions::Index
     h1 "Editing expense ##{transaction.id}"
     render_transaction_form(operation)
   end
