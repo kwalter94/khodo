@@ -1,0 +1,2 @@
+class MonthlyTransactionsByTagReportQuery < MonthlyTransactionsByTagReport::BaseQuery
+end

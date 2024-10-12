@@ -5,7 +5,7 @@ class ExchangeRates::IndexPage < MainLayout
   def content
     div class: "row" do
       h3 class: "col col-8" { text "Exchange Rates" }
-      link "New Exchange Rate", to: ExchangeRates::New, class: "btn btn-primary col col-2 offset-2"
+      link "New Rate", to: ExchangeRates::New, class: "btn btn-primary col col-2 offset-2"
     end
 
     div class: "row" do

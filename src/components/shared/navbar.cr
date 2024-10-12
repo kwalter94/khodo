@@ -28,20 +28,20 @@ class Shared::Navbar < BaseComponent
       ul class: "navbar-nav me-auto mb-2 mb-lg-0" do
         nav_link "Home", to: Home::Index
         nav_link "Accounts", to: Accounts::Index
+        nav_link "Tags", to: Tags::Index
 
         li class: "nav-item dropdown" do
           a(
             aria_expanded: "false",
-            class: "nav-link dropdown-toggle",
+            class: on_currency_page? ? "nav-link dropdown-togger" : "nav-link dropdown-toggle text-light",
             data_bs_toggle: "dropdown",
             href: "#",
             id: "metadata-dropdown",
             role: "button",
-          ) { text "Metadata" }
+          ) { text "Currencies" }
           ul aria_labelledby: "metadata-dropdown", class: "dropdown-menu" do
-            dropdown_link "Currencies", to: Currencies::Index
-            dropdown_link "Exchange Rates", to: ExchangeRates::Index
-            dropdown_link "Tags", to: Tags::Index
+            dropdown_link "Manage Currencies", to: Currencies::Index
+            dropdown_link "Manage Exchange Rates", to: ExchangeRates::Index
           end
         end
       end
@@ -83,5 +83,9 @@ class Shared::Navbar < BaseComponent
     else
       li { a label, **extra_attrs, href: to, class: "dropdown-item" }
     end
+  end
+
+  private def on_currency_page? : Bool
+    current_page?(Currencies::Index) || current_page?(ExchangeRates::Index)
   end
 end
