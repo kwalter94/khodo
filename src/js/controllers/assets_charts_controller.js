@@ -29,7 +29,7 @@ export default class extends Controller {
   }
 
   plotAssetsDistributionChart(data) {
-    data = data.filter(({total_assets, period}) => total_assets > 1 && period == 1);
+    data = data.filter(({balance, period}) => balance > 1 && period == 1);
     const ctx = this.element.querySelector("#assets-distribution");
 
     new Chart(ctx, {
@@ -39,7 +39,7 @@ export default class extends Controller {
         datasets: [
           {
             label: "Asset Accounts",
-            data: data.map(({total_assets}) => total_assets),
+            data: data.map(({balance}) => balance),
             borderWidth: 1,
           }
         ],
@@ -58,13 +58,13 @@ export default class extends Controller {
     let months = new Set();
     let accounts = new Map();
 
-    for (const {month, account_name, total_assets} of report) {
+    for (const {month, account_name, balance} of report) {
       months.add(month);
       if (!accounts.has(account_name)) {
         accounts.set(account_name, []);
       }
 
-      accounts.get(account_name).push(total_assets);
+      accounts.get(account_name).push(balance);
     }
 
     new Chart(ctx, {

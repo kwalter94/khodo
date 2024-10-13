@@ -1,0 +1,2 @@
+class CumulativeAccountBalanceReportQuery < CumulativeAccountBalanceReport::BaseQuery
+end

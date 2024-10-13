@@ -11,20 +11,22 @@ class Home::Index < BrowserAction
     end
 
     flash_missing_currencies(currency)
-    total_assets, new_assets = net_assets(currency)
+
+    report = account_balance_report(currency)
+    total_assets, new_assets = total_balance(report, "Asset")
+    total_liabilities, new_liabilities = total_balance(report, "Liability")
 
     html Home::IndexPage,
       reporting_currency: currency,
       currencies: user_currencies,
       total_assets: total_assets,
-      new_assets: new_assets
+      new_assets: new_assets,
+      total_liabilities: total_liabilities,
+      new_liabilities: new_liabilities
   end
 
   private def find_reporting_currency : Currency?
-    currency = currency_id.try do |id|
-      CurrencyQuery.new.owner_id(current_user.id).find(id)
-    end
-
+    currency = currency_id.try { |id| CurrencyQuery.new.owner_id(current_user.id).find(id) }
     currency || CurrencyQuery.find_user_default_currency?(current_user.id)
   end
 
@@ -44,18 +46,18 @@ class Home::Index < BrowserAction
     flash.set("warning", "You may be viewing innacurate reports due to missing currency conversions: #{conversions}")
   end
 
-  private def net_assets(currency : Currency) : Tuple(Float64, Float64)
-    assets_query = CumulativeAssetsReportQuery
+  private def account_balance_report(currency : Currency) : CumulativeAccountBalanceReportQuery
+    CumulativeAccountBalanceReportQuery
       .new
       .owner_id(current_user.id)
       .currency_id(currency.id)
-      .month.desc_order
-      .total_assets.asc_order
       .period(1)
+  end
 
-    assets_query.reduce({0.0.to_f64, 0.0.to_f64}) do |accum, asset|
-      {(asset.total_assets || 0.0) + accum[0], (asset.net_receipts || 0.0)}
-    end
+  private def total_balance(report : CumulativeAccountBalanceReportQuery, account_type_name : String) : Tuple(Float64, Float64)
+    report
+      .select { |account| account.account_type_name == account_type_name }
+      .reduce({0.0.to_f64, 0.0.to_f64}) { |accum, account| {account.balance + accum[0], account.net_receipts} }
   end
 
   private def user_currencies : Enumerable(Currency)

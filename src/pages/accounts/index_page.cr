@@ -1,5 +1,8 @@
 class Accounts::IndexPage < MainLayout
-  needs account_balance_report : AccountBalanceReportQuery
+  needs accounts : Enumerable(CumulativeAccountBalanceReport)
+  needs currencies : Enumerable(Currency)
+  needs reporting_currency : Currency
+
   quick_def page_title, "All Accounts"
 
   def content
@@ -8,7 +11,10 @@ class Accounts::IndexPage < MainLayout
       link "New Account", to: Accounts::New, class: "btn btn-primary col col-2 offset-2"
     end
 
-    div class: "row" { render_report }
+    div class: "row" do
+      render_currency_selector
+      render_report
+    end
   end
 
   def render_report
@@ -17,20 +23,41 @@ class Accounts::IndexPage < MainLayout
         table class: "table table-striped" do
           thead do
             th { text "Account" }
-            th { text "Currency" }
-            th { text "Net Additions (Last Month)" }
+            th { text "Type" }
+            th { text "Net Additions (this month)" }
             th { text "Balance" }
           end
 
           tbody do
-            account_balance_report.each do |row|
+            accounts.each do |row|
               tr do
-                td { link row.name, Accounts::Show.with(row.account) }
-                td { text row.currency_name }
-                td { text format_money(row.net_additions_last_month) }
-                td { text format_money(row.balance) }
+                td { link row.account_name, Accounts::Show.with(row.account_id) }
+                td { text row.account_type_name }
+                td { text format_money(row.net_receipts, reporting_currency) }
+                td { text format_money(row.balance, reporting_currency) }
               end
             end
+          end
+        end
+      end
+    end
+  end
+
+  private def render_currency_selector
+    div class: "col col-lg-4 offset-lg-8" do
+      div class: "input-group mb-2" do
+        span class: "input-group-text" { text "Currency" }
+        tag(
+          "select",
+          class: "form-select form-control",
+          aria_label: "Select Currency",
+          data_controller: "currency-selector",
+          data_action: "currency-selector#onChange",
+          data_currency_selector_target: "currencyId",
+        ) do
+          currencies.each do |currency|
+            attrs = currency.id == reporting_currency.id ? [:selected] : [] of Symbol
+            option(value: currency.id, attrs: attrs) { text "#{currency.name} (#{currency.symbol})" }
           end
         end
       end

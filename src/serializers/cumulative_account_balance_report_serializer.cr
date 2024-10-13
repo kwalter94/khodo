@@ -1,5 +1,5 @@
-class CumulativeAssetsReportSerializer < BaseSerializer
-  def initialize(@report : CumulativeAssetsReport)
+class CumulativeAccountBalanceReportSerializer < BaseSerializer
+  def initialize(@report : CumulativeAccountBalanceReport)
   end
 
   def render
@@ -15,7 +15,7 @@ class CumulativeAssetsReportSerializer < BaseSerializer
       net_receipts:          @report.net_receipts,
       cumulative_receipts:   @report.cumulative_receipts,
       cumulative_deductions: @report.cumulative_deductions,
-      total_assets:          @report.total_assets,
+      balance:               @report.balance,
     }
   end
 end

@@ -1,18 +1,24 @@
 class Accounts::Index < BrowserAction
-  get "/accounts" do
-    asset_accounts = AccountQuery
-      .new
-      .owner_id(current_user.id)
-      .where_type(AccountTypeQuery.new.name.in(["Asset", "Liability"]))
+  param currency_id : Int64? = nil
 
-    report = AccountBalanceReportQuery
+  get "/accounts" do
+    currency = currency_id.try { |id| CurrencyQuery.new.owner_id(current_user.id).id(id).first? }
+    currency ||= CurrencyQuery.find_user_default_currency(current_user.id)
+
+    report = CumulativeAccountBalanceReportQuery
       .new
-      .preload_account
       .owner_id(current_user.id)
-      .where_account(asset_accounts)
-      .name.asc_order
+      .currency_id(currency.id)
+      .period(1)
+      .account_type_name.asc_order
+      .account_name.asc_order
       .currency_name.asc_order
 
-    html IndexPage, account_balance_report: report
+    currencies = CurrencyQuery.new.owner_id(current_user.id).name.asc_order
+
+    html IndexPage,
+      accounts: report,
+      reporting_currency: currency,
+      currencies: currencies
   end
 end
