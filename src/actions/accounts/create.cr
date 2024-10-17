@@ -6,7 +6,10 @@ class Accounts::Create < BrowserAction
         redirect Show.with(account.id)
       else
         flash.failure = "It looks like the form is not valid"
-        html NewPage, operation: operation
+        html NewPage,
+          operation: operation,
+          currencies: CurrencyQuery.find_user_currencies(current_user.id).name.asc_order,
+          account_types: AccountTypeQuery.user_managed_account_types
       end
     end
   end

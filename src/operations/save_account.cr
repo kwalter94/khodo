@@ -13,12 +13,4 @@ class SaveAccount < Account::SaveOperation
     validate_required type_id
     validate_required currency_id
   end
-
-  def account_types : Enumerable(AccountType)
-    AccountTypeQuery.new.name.in(["Asset", "Liability"])
-  end
-
-  def currencies : Enumerable(Currency)
-    CurrencyQuery.new.owner_id(owner.id)
-  end
 end

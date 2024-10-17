@@ -1,6 +1,9 @@
 class Accounts::EditPage < MainLayout
   needs operation : SaveAccount
   needs account : Account
+  needs account_types : Enumerable(AccountType)
+  needs currencies : Enumerable(Currency)
+
   quick_def page_title, "Edit Account with id: #{account.id}"
 
   def content
@@ -12,7 +15,10 @@ class Accounts::EditPage < MainLayout
   def render_account_form(op)
     form_for Accounts::Update.with(account.id) do
       # Edit fields in src/components/accounts/form_fields.cr
-      mount Accounts::FormFields, op
+      mount Accounts::FormFields,
+        operation: operation,
+        account_types: account_types,
+        currencies: currencies
 
       submit "Update", class: "btn btn-primary col col-12", data_disable_with: "Updating..."
     end

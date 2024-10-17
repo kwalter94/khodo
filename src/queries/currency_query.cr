@@ -20,4 +20,8 @@ class CurrencyQuery < Currency::BaseQuery
       .first?
       .try(&.currency)
   end
+
+  def self.find_user_currencies(user_id : Int64) : CurrencyQuery
+    CurrencyQuery.new.owner_id(user_id)
+  end
 end

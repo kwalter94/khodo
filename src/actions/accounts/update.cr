@@ -7,7 +7,11 @@ class Accounts::Update < BrowserAction
         redirect Show.with(updated_account.id)
       else
         flash.failure = "It looks like the form is not valid"
-        html EditPage, operation: operation, account: updated_account
+        html EditPage,
+          operation: operation,
+          account: updated_account,
+          account_types: AccountTypeQuery.user_managed_account_types.name.asc_order,
+          currencies: CurrencyQuery.find_user_currencies(current_user.id).name.asc_order
       end
     end
   end
