@@ -4,17 +4,16 @@ class Currencies::EditPage < MainLayout
   quick_def page_title, "Edit Currency with id: #{currency.id}"
 
   def content
-    link "Back to all Currencies", Currencies::Index
-    h1 "Edit Currency with id: #{currency.id}"
-    render_currency_form(operation)
+    div class: "row" { h1 "Edit Currency \"#{currency.name}\"" }
+    div class: "row" { render_currency_form }
   end
 
-  def render_currency_form(op)
+  def render_currency_form
     form_for Currencies::Update.with(currency.id) do
       # Edit fields in src/components/currencies/form_fields.cr
-      mount Currencies::FormFields, op
+      mount Currencies::FormFields, operation
 
-      submit "Update", data_disable_with: "Updating..."
+      div class: "d-grid" { submit "Update", data_disable_with: "Updating...", class: "btn btn-primary" }
     end
   end
 end

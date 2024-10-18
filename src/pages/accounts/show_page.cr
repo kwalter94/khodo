@@ -12,25 +12,27 @@ class Accounts::ShowPage < MainLayout
   end
 
   private def render_actions
-    h1 account.name, class: "col-8"
+    div class: "col col-12 col-md-8" { h1 account.name }
 
-    section class: "col-2 offset-2" do
-      div class: "dropdown" do
-        button(
-          class: "btn btn-primary dropdown-toggle",
-          type: "button",
-          id: "actions",
-          data_bs_toggle: "dropdown",
-          aria_expanded: "false",
-        ) { text "Actions" }
+    div class: "col col-12 offset-md-2 col-md-2" do
+      section do
+        div class: "dropdown d-grid gap-2" do
+          button(
+            class: "btn btn-primary dropdown-toggle",
+            type: "button",
+            id: "actions",
+            data_bs_toggle: "dropdown",
+            aria_expanded: "false",
+          ) { text "Actions" }
 
-        ul class: "dropdown-menu", aria_labelledby: "actions" do
-          li { link "Add Expense", Expenses::New.with(account_id: account.id), class: "dropdown-item" }
-          li { link "Add Income", Income::New.with(account_id: account.id), class: "dropdown-item" }
-          li { link "Add Transfer", Transfers::New.with(account_id: account.id), class: "dropdown-item" }
-          li { hr class: "dropdown-divider" }
-          li { link "Edit Account", Accounts::Edit.with(account.id), class: "dropdown-item" }
-          li { link "Delete Account", Accounts::Delete.with(account.id), data_confirm: "Are you sure?", class: "dropdown-item" }
+          ul class: "dropdown-menu", aria_labelledby: "actions" do
+            li { link "Add Expense", Expenses::New.with(account_id: account.id), class: "dropdown-item" }
+            li { link "Add Income", Income::New.with(account_id: account.id), class: "dropdown-item" }
+            li { link "Add Transfer", Transfers::New.with(account_id: account.id), class: "dropdown-item" }
+            li { hr class: "dropdown-divider" }
+            li { link "Edit Account", Accounts::Edit.with(account.id), class: "dropdown-item" }
+            li { link "Delete Account", Accounts::Delete.with(account.id), data_confirm: "Are you sure?", class: "dropdown-item" }
+          end
         end
       end
     end

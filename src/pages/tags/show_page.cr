@@ -6,8 +6,8 @@ class Tags::ShowPage < MainLayout
 
   def content
     div class: "row" do
-      div class: "col col-10" { h1 tag.name }
-      div class: "col col-2" { render_actions }
+      div class: "col col-12 col-md-10" { h1 tag.name }
+      div class: "col col-12 col-md-2" { render_actions }
     end
 
     div class: "row" do
@@ -26,7 +26,7 @@ class Tags::ShowPage < MainLayout
   end
 
   private def render_actions
-    div class: "dropdown" do
+    div class: "dropdown d-grid" do
       button(
         class: "btn btn-primary dropdown-toggle",
         type: "button",

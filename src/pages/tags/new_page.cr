@@ -12,7 +12,7 @@ class Tags::NewPage < MainLayout
       # Edit fields in src/components/tags/form_fields.cr
       mount Tags::FormFields, op
 
-      submit "Save", data_disable_with: "Saving..."
+      div class: "d-grid" { submit "Save", class: "btn btn-primary", data_disable_with: "Saving..." }
     end
   end
 end

@@ -7,8 +7,12 @@ class Accounts::IndexPage < MainLayout
 
   def content
     div class: "row" do
-      h3 class: "col col-8" { text "All Accounts" }
-      link "New Account", to: Accounts::New, class: "btn btn-primary col col-2 offset-2"
+      h3 class: "col col-12 col-md-8" { text "All Accounts" }
+      div class: "col col-12 col-md-3 offset-md-1" do
+        div class: "d-grid gap-2" do
+          link "New Account", to: Accounts::New, class: "btn btn-primary"
+        end
+      end
     end
 
     div class: "row" do
@@ -33,8 +37,8 @@ class Accounts::IndexPage < MainLayout
               tr do
                 td { link row.account_name, Accounts::Show.with(row.account_id) }
                 td { text row.account_type_name }
-                td { text format_money(row.net_receipts, reporting_currency) }
-                td { text format_money(row.balance, reporting_currency) }
+                td class: "monetary-value" { text format_money(row.net_receipts, reporting_currency) }
+                td class: "monetary-value" { text format_money(row.balance, reporting_currency) }
               end
             end
           end

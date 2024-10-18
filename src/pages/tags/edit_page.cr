@@ -4,9 +4,9 @@ class Tags::EditPage < MainLayout
   quick_def page_title, "Edit Tag with id: #{tag.id}"
 
   def content
-    link "Back to all Tags", Tags::Index
-    h1 "Edit Tag with id: #{tag.id}"
-    render_tag_form(operation)
+    div class: "row" { link "Back to #{tag.name}", Tags::Show.with(tag.id) }
+    div class: "row" { h1 "Editting tag \"#{tag.name}\"" }
+    div class: "row" { render_tag_form(operation) }
   end
 
   def render_tag_form(op)
@@ -14,7 +14,7 @@ class Tags::EditPage < MainLayout
       # Edit fields in src/components/tags/form_fields.cr
       mount Tags::FormFields, op
 
-      submit "Update", data_disable_with: "Updating..."
+      div class: "d-grid" { submit "Save", class: "btn btn-primary", data_disable_with: "Saving..." }
     end
   end
 end

@@ -7,8 +7,10 @@ class Tags::IndexPage < MainLayout
 
   def content
     div class: "row" do
-      div class: "col col-10" { h1 "All Tags" }
-      div class: "col col-2" { link "New Tag", to: Tags::New, class: "btn btn-primary" }
+      div class: "col col-12 col-md-10" { h3 "All Tags" }
+      div class: "col col-12 col-md-2" do
+        div class: "d-grid" { link "New Tag", to: Tags::New, class: "btn btn-primary" }
+      end
     end
 
     div class: "row" { render_tags }
@@ -30,9 +32,9 @@ class Tags::IndexPage < MainLayout
           report.each do |row|
             tr do
               td { link row.tag_name, to: Tags::Show.with(row.tag_id) }
-              td { text format_money(row.total_income, reporting_currency) }
-              td { text format_money(row.total_expenses, reporting_currency) }
-              td { text format_money(row.total_income - row.total_expenses, reporting_currency) }
+              td class: "monetary-value" { text format_money(row.total_income, reporting_currency) }
+              td class: "monetary-value" { text format_money(row.total_expenses, reporting_currency) }
+              td class: "monetary-value" { text format_money(row.total_income - row.total_expenses, reporting_currency) }
             end
           end
         end
