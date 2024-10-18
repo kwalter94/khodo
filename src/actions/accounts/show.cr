@@ -7,15 +7,13 @@ class Accounts::Show < BrowserAction
       .preload_currency
       .find(account_id)
 
-    account_balance = AccountBalanceReportQuery
+    account_balance = CumulativeAccountBalanceReportQuery
       .new
       .owner_id(current_user.id)
       .account_id(account.id)
+      .currency_id(account.currency_id)
+      .period(1)
       .first
-
-    raise "Missing account report" if account_balance.nil?
-
-    start_date = (Time.local - Time::Span.new(days: 30)).to_s("%Y-%m-%d")
 
     transactions = TransactionQuery
       .new

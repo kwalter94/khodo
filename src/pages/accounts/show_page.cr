@@ -1,6 +1,6 @@
 class Accounts::ShowPage < MainLayout
   needs account : Account
-  needs balance : AccountBalanceReport
+  needs balance : CumulativeAccountBalanceReport
   needs transactions : TransactionQuery
   needs pages : Lucky::Paginator
 
@@ -49,9 +49,9 @@ class Accounts::ShowPage < MainLayout
       table class: "table" do
         tbody do
           account_property "Current Balance:", format_money(balance.balance, account.currency)
-          account_property "Additions (Last 30 Days):", format_money(balance.total_additions_last_month, account.currency)
-          account_property "Deductions (Last 30 Days):", format_money(balance.total_deductions_last_month, account.currency)
-          account_property "Net Additions (Last 30 Days):", format_money(balance.net_additions_last_month, account.currency)
+          account_property "Additions (this month):", format_money(balance.receipts, account.currency)
+          account_property "Deductions (this month):", format_money(balance.deductions, account.currency)
+          account_property "Net Additions (this month):", format_money(balance.net_receipts, account.currency)
         end
       end
     end
