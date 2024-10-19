@@ -57,7 +57,7 @@ class Home::Index < BrowserAction
   private def total_balance(report : CumulativeAccountBalanceReportQuery, account_type_name : String) : Tuple(Float64, Float64)
     report
       .select { |account| account.account_type_name == account_type_name }
-      .reduce({0.0.to_f64, 0.0.to_f64}) { |accum, account| {account.balance + accum[0], account.net_receipts} }
+      .reduce({0.0.to_f64, 0.0.to_f64}) { |accum, account| {account.balance + accum[0], account.net_receipts + accum[1]} }
   end
 
   private def user_currencies : Enumerable(Currency)
