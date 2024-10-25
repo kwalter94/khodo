@@ -16,5 +16,9 @@ class Tags::Index < BrowserAction
       report: report,
       reporting_currency: currency,
       currencies: CurrencyQuery.new.owner_id(current_user.id).name.asc_order
+  rescue error : UserProperties::ConfigurationError
+    Log.warn(exception: error) { "Missing user properties!" }
+    flash.info = error.to_s
+    redirect to: UserProperties::Edit
   end
 end

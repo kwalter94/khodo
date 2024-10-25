@@ -38,6 +38,17 @@ class Errors::Show < Lucky::ErrorAction
     end
   end
 
+  def render(error : UserProperties::ConfigurationError)
+    if html?
+      error_html error.to_s, status: 400
+    else
+      error_json \
+        message: "User property configuration required",
+        details: error.to_s,
+        status: 400
+    end
+  end
+
   # If none of the 'render' methods return a response for the raised Exception,
   # Lucky will use this method.
   def default_render(error : Exception) : Lucky::Response

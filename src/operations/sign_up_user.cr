@@ -11,4 +11,8 @@ class SignUpUser < User::SaveOperation
     validate_uniqueness_of email
     Authentic.copy_and_encrypt(password, to: encrypted_password) if password.valid?
   end
+
+  after_save do |user|
+    SaveUserProperties.create!(user: user)
+  end
 end

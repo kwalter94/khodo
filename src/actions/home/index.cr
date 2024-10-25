@@ -1,15 +1,10 @@
 class Home::Index < BrowserAction
-  # include Auth::AllowGuests
+  Log = ::Log.for(self)
 
   param currency_id : Int64? = nil
 
   get "/" do
     currency = find_reporting_currency
-    if currency.nil?
-      flash.info = "You need to set a default currency first!"
-      return redirect to: UserProperties::Edit
-    end
-
     flash_missing_currencies(currency)
 
     report = account_balance_report(currency)
@@ -23,11 +18,15 @@ class Home::Index < BrowserAction
       new_assets: new_assets,
       total_liabilities: total_liabilities,
       new_liabilities: new_liabilities
+  rescue error : UserProperties::ConfigurationError
+    flash.info = "You need to set a default currency first!"
+    Log.warn(exception: error) { error.to_s }
+    redirect to: UserProperties::Edit
   end
 
-  private def find_reporting_currency : Currency?
+  private def find_reporting_currency : Currency
     currency = currency_id.try { |id| CurrencyQuery.new.owner_id(current_user.id).find(id) }
-    currency || CurrencyQuery.find_user_default_currency?(current_user.id)
+    currency || CurrencyQuery.find_user_default_currency(current_user.id)
   end
 
   private def flash_missing_currencies(target_currency : Currency)

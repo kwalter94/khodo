@@ -6,7 +6,7 @@ class UserProperties::EditPage < MainLayout
   quick_def page_title, "Edit Properties"
 
   def content
-    div class: "row" { h1 "Edit Properties" }
+    div class: "row" { h1 "Properties" }
     div class: "row" { render_user_property_form }
   end
 
@@ -15,7 +15,9 @@ class UserProperties::EditPage < MainLayout
       # Edit fields in src/components/user_properties/form_fields.cr
       mount UserProperties::FormFields, operation: operation, currencies: currencies
 
-      submit "Update", class: "btn btn-primary", data_disable_with: "Updating..."
+      div class: "d-grid" do
+        submit "Update", class: "btn btn-primary", data_disable_with: "Updating..."
+      end
     end
   end
 end

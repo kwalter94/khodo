@@ -20,5 +20,9 @@ class Accounts::Index < BrowserAction
       accounts: report,
       reporting_currency: currency,
       currencies: currencies
+  rescue error : UserProperties::ConfigurationError
+    Log.warn(exception: error) { "Missing user properties!" }
+    flash.info = error.to_s
+    redirect to: UserProperties::Edit
   end
 end
