@@ -1,0 +1,49 @@
+---
+x-lucky-env: &lucky-env
+  DATABASE_URL: postgres://${DATABASE_USER:-khodo}:${DATABASE_PASSWORD:-password}@postgres:5432/${DATABASE_NAME:-khodo}
+  LUCKY_ENV: production
+  SECRET_KEY_BASE: ${SECRET_KEY:-}
+  HOST: 127.0.0.1
+  PORT: 5000
+  APP_DOMAIN: ${APP_DOMAIN:-http://127.0.0.1}
+  SEND_GRID_KEY: ""
+
+services:
+  server:
+    image: kwalter94/khodo:latest
+    command: caddy run -c /khodo/Caddyfile
+    environment:
+      <<: *lucky-env
+    depends_on:
+      - backend
+    restart: on-failure
+    ports:
+      - 8080:8080
+
+  backend:
+    image: kwalter94/khodo:latest
+    command: /khodo/start_server
+    environment:
+      <<: *lucky-env
+    depends_on:
+      - postgres
+    restart: on-failure
+
+  db-setup:
+    image: kwalter94/khodo:latest
+    command: sh -c "/khodo/run_tasks db.migrate && /khodo/run_tasks db.seed.required_data"
+    environment:
+      <<: *lucky-env
+    depends_on:
+      - postgres
+    restart: on-failure
+
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: ${DATABASE_USER:-khodo}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD:-password}
+      POSTGRES_DB: ${DATABASE_NAME:-khodo}
+    ports:
+      - 6543:5432
+    restart: on-failure

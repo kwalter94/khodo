@@ -1,0 +1,5 @@
+:8080
+encode gzip
+
+file_server /public/*
+reverse_proxy http://backend:5000
