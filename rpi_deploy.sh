@@ -18,7 +18,6 @@ echo "Copying image to pi"
 ssh $server "[ -d khodo ] || mkdir khodo"
 rsync --progress khodo.img docker-compose-prod.yml $server:khodo/
 ssh $server "cd khodo && docker load -i khodo.img && docker-compose -f docker-compose-prod.yml restart"
-
 rm khodo.img
 
 echo "Update done"

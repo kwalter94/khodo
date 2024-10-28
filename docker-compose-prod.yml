@@ -31,7 +31,7 @@ services:
 
   db-setup:
     image: kwalter94/khodo:latest
-    command: sh -c "/khodo/run_tasks db.migrate && /khodo/run_tasks db.seed.required_data"
+    command: sh -c "/khodo/tasks db.migrate && /khodo/tasks db.seed.required_data"
     environment:
       <<: *lucky-env
     depends_on:

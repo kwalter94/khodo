@@ -20,7 +20,7 @@ class Home::Index < BrowserAction
       new_liabilities: new_liabilities
   rescue error : UserProperties::ConfigurationError
     flash.info = "You need to set a default currency first!"
-    Log.warn(exception: error) { error.to_s }
+    Log.warn(exception: error) { "Missing user properties" }
     redirect to: UserProperties::Edit
   end
 
