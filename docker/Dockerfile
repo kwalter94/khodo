@@ -1,5 +1,7 @@
 FROM --platform=$BUILDPLATFORM crystallang/crystal:1.13 AS cross_compile_crystal
 
+ARG TARGETARCH
+
 USER root
 WORKDIR /khodo
 
@@ -28,11 +30,11 @@ RUN mkdir /khodo/build
 # Parallelise slow Crystal builds
 FROM cross_compile_crystal AS server_build
 
-RUN crystal build --static --release --cross-compile --target aarch64-unknown-linux-gnu src/start_server.cr -o build/start_server
+RUN crystal build --static --release --cross-compile --target ${TARGETARCH}-unknown-linux-gnu src/start_server.cr -o build/start_server.o
 
 FROM cross_compile_crystal AS tasks_build
 
-RUN crystal build --static --release --cross-compile --target aarch64-unknown-linux-gnu tasks.cr -o build/tasks
+RUN crystal build --static --release --cross-compile --target ${TARGETARCH}-unknown-linux-gnu tasks.cr -o build/tasks.o
 
 FROM debian:bookworm-slim AS crystal_link
 
