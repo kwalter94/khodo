@@ -14,7 +14,7 @@ class Transfers::EditPage < MainLayout
       form_for Transfers::Update.with(transaction.id, account_id: account.id) do
         mount Transfers::FormFields, operation: operation, account: account
 
-        submit "Update", class: "btn btn-primary col-12", data_disable_with: "Updating..."
+        mount Shared::SubmitButton, "Update", data_disable_with: "Updating Transfers..."
       end
     end
   end

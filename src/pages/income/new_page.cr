@@ -11,9 +11,7 @@ class Income::NewPage < MainLayout
       form_for Income::Create.with(account_id: operation.account.id) do
         mount Income::FormFields, operation
 
-        div class: "d-grid gap-2" do
-          submit "Save", data_disable_with: "Saving...", class: "btn btn-primary"
-        end
+        mount Shared::SubmitButton
       end
     end
   end

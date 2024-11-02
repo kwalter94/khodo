@@ -12,7 +12,7 @@ class PasswordResets::NewPage < AuthLayout
       mount Shared::Field, attribute: op.password, label_text: "Password", &.password_input(autofocus: "true")
       mount Shared::Field, attribute: op.password_confirmation, label_text: "Confirm Password", &.password_input
 
-      submit "Update Password", flow_id: "update-password-button"
+      mount Shared::SubmitButton, "Update Password"
     end
   end
 end

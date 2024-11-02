@@ -14,7 +14,7 @@ class Transactions::EditPage < MainLayout
       # Edit fields in src/components/transactions/form_fields.cr
       mount Transactions::FormFields, op
 
-      submit "Update", data_disable_with: "Updating..."
+      mount Shared::SubmitButton, "Update", data_disable_with: "Updating Tx..."
     end
   end
 end

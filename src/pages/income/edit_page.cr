@@ -10,8 +10,7 @@ class Income::EditPage < MainLayout
   def render_transaction_form(op)
     form_for Income::Update.with(transaction.id, account_id: operation.account.id) do
       mount Income::FormFields, op
-
-      submit "Update", class: "btn btn-primary col-12", data_disable_with: "Updating..."
+      mount Shared::SubmitButton, "Update", data_disable_with: "Saving Income"
     end
   end
 end

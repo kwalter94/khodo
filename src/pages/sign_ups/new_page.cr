@@ -2,16 +2,18 @@ class SignUps::NewPage < AuthLayout
   needs operation : SignUpUser
 
   def content
-    h1 "Sign Up"
-    render_sign_up_form(@operation)
+    div class: "row" { h1 "Sign Up" }
+    div class: "row" { render_sign_up_form(@operation) }
+    div class: "row" { link "Sign in instead", to: SignIns::New }
   end
 
   private def render_sign_up_form(op)
-    form_for SignUps::Create do
-      sign_up_fields(op)
-      submit "Sign Up", flow_id: "sign-up-button"
+    div class: "col col-12" do
+      form_for SignUps::Create do
+        sign_up_fields(op)
+        mount Shared::SubmitButton, "Sign Up", data_disable_with: "Signing Up"
+      end
     end
-    link "Sign in instead", to: SignIns::New
   end
 
   private def sign_up_fields(op)

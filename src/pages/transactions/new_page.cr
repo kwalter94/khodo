@@ -12,7 +12,7 @@ class Transactions::NewPage < MainLayout
       # Edit fields in src/components/transactions/form_fields.cr
       mount Transactions::FormFields, op
 
-      submit "Save", data_disable_with: "Saving..."
+      mount Shared::SubmitButton, data_disable_with: "Saving Tx"
     end
   end
 end

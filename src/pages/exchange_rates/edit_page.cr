@@ -13,10 +13,9 @@ class ExchangeRates::EditPage < MainLayout
 
   def render_exchange_rate_form(op)
     form_for ExchangeRates::Update.with(exchange_rate.id) do
-      # Edit fields in src/components/exchange_rates/form_fields.cr
       mount ExchangeRates::FormFields, op, currencies: currencies
 
-      submit "Update", class: "btn btn-primary col col-12", data_disable_with: "Updating..."
+      mount Shared::SubmitButton, "Update", data_disable_with: "Updating Exchange Rate..."
     end
   end
 end

@@ -12,8 +12,7 @@ class ExchangeRates::NewPage < MainLayout
     form_for ExchangeRates::Create do
       # Edit fields in src/components/exchange_rates/form_fields.cr
       mount ExchangeRates::FormFields, operation, currencies: currencies
-
-      div class: "d-grid" { submit "Save", class: "btn btn-primary", data_disable_with: "Saving..." }
+      mount Shared::SubmitButton, data_disable_with: "Saving"
     end
   end
 end

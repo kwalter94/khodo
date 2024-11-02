@@ -19,7 +19,7 @@ class Accounts::NewPage < MainLayout
           account_types: account_types,
           currencies: currencies
 
-        submit "Save", class: "btn btn-primary", data_disable_with: "Saving..."
+        mount Shared::SubmitButton
       end
     end
   end

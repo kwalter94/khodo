@@ -11,8 +11,7 @@ class Tags::NewPage < MainLayout
     form_for Tags::Create do
       # Edit fields in src/components/tags/form_fields.cr
       mount Tags::FormFields, op
-
-      div class: "d-grid" { submit "Save", class: "btn btn-primary", data_disable_with: "Saving..." }
+      mount Shared::SubmitButton, data_disable_with: "Saving"
     end
   end
 end

@@ -12,12 +12,8 @@ class UserProperties::EditPage < MainLayout
 
   def render_user_property_form
     form_for UserProperties::Update do
-      # Edit fields in src/components/user_properties/form_fields.cr
       mount UserProperties::FormFields, operation: operation, currencies: currencies
-
-      div class: "d-grid" do
-        submit "Update", class: "btn btn-primary", data_disable_with: "Updating..."
-      end
+      mount Shared::SubmitButton, label: "Save", data_disable_with: "Updating Properties"
     end
   end
 end

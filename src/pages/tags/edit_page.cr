@@ -13,8 +13,7 @@ class Tags::EditPage < MainLayout
     form_for Tags::Update.with(tag.id) do
       # Edit fields in src/components/tags/form_fields.cr
       mount Tags::FormFields, op
-
-      div class: "d-grid" { submit "Save", class: "btn btn-primary", data_disable_with: "Saving..." }
+      mount Shared::SubmitButton, label: "Save", data_disable_with: "Saving Tag"
     end
   end
 end

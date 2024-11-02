@@ -10,10 +10,7 @@ class Transfers::NewPage < MainLayout
   def render_transaction_form
     form_for Transfers::Create.with(account_id: account.id) do
       mount Transfers::FormFields, operation: operation, account: account
-
-      div class: "d-grid gap-2" do
-        submit "Save", class: "btn btn-primary", data_disable_with: "Saving..."
-      end
+      mount Shared::SubmitButton
     end
   end
 end

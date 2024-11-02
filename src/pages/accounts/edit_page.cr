@@ -14,13 +14,12 @@ class Accounts::EditPage < MainLayout
 
   def render_account_form(op)
     form_for Accounts::Update.with(account.id) do
-      # Edit fields in src/components/accounts/form_fields.cr
       mount Accounts::FormFields,
         operation: operation,
         account_types: account_types,
         currencies: currencies
 
-      submit "Update", class: "btn btn-primary col col-12", data_disable_with: "Updating..."
+      mount Shared::SubmitButton, "Update", data_disable_with: "Updating Accounts..."
     end
   end
 end
