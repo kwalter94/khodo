@@ -4,7 +4,7 @@ class Currencies::Update < BrowserAction
     SaveCurrency.update(currency, params, owner: current_user) do |operation, updated_currency|
       if operation.saved?
         flash.success = "The record has been updated"
-        redirect Show.with(updated_currency.id)
+        redirect Index
       else
         flash.failure = "It looks like the form is not valid"
         html EditPage, operation: operation, currency: updated_currency

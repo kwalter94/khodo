@@ -4,7 +4,7 @@ class Tags::Update < BrowserAction
     SaveTag.update(tag, params, owner: current_user) do |operation, updated_tag|
       if operation.saved?
         flash.success = "The record has been updated"
-        redirect Show.with(updated_tag.id)
+        redirect Tags::Show.with(tag.id)
       else
         flash.failure = "It looks like the form is not valid"
         html EditPage, operation: operation, tag: updated_tag

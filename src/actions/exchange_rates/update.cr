@@ -6,7 +6,7 @@ class ExchangeRates::Update < BrowserAction
     SaveExchangeRate.update(exchange_rate, params, owner: current_user) do |operation, updated_exchange_rate|
       if operation.saved?
         flash.success = "The record has been updated"
-        redirect Show.with(updated_exchange_rate.id)
+        redirect Index
       else
         flash.failure = "It looks like the form is not valid"
         html EditPage,
