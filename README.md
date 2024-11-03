@@ -9,7 +9,7 @@ if you have the following available:
 - [Docker](https://docs.docker.com/engine/install/)
 - [Docker Compose](https://docs.docker.com/compose/)
 - openssl (this is only needed to generate a random key - you can come up with your own)
-- curl or something like wget (needed to download [this file](https://gitlab.com/ntumbuka/khodo/-/raw/develop/docker-compose-prod.yml?ref_type=heads -o docker-compose.yml))
+- curl or something like wget
 
 Run the following instructions, once you have the above:
 
