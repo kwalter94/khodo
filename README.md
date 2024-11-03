@@ -2,7 +2,22 @@
 
 This is a project written using [Lucky](https://luckyframework.org). Enjoy!
 
-### Setting up the project
+## Quick setup
+
+You can quickly get started with this app on Linux (Mac too possibly)
+if you have the following available:
+- [Docker](https://docs.docker.com/engine/install/)
+- [Docker Compose](https://docs.docker.com/compose/)
+- openssl (this is only needed to generate a random key - you can come up with your own)
+- curl or something like wget (needed to download [this file](https://gitlab.com/ntumbuka/khodo/-/raw/develop/docker-compose-prod.yml?ref_type=heads -o docker-compose.yml))
+
+Run the following instructions, once you have the above:
+
+```sh
+curl -L https://gitlab.com/ntumbuka/khodo/-/raw/develop/quick-setup.sh?ref_type=heads | sh -s
+```
+
+### Setting up the project for development
 
 1. [Install required dependencies](https://luckyframework.org/guides/getting-started/installing#install-required-dependencies)
 1. Update database settings in `config/database.cr`
