@@ -10,7 +10,7 @@ x-lucky-env: &lucky-env
 
 services:
   server:
-    image: kwalter94/khodo:latest
+    image: "kwalter94/khodo:${TAG:-latest}"
     command: caddy run -c /khodo/Caddyfile
     environment:
       <<: *lucky-env
@@ -21,7 +21,7 @@ services:
       - 8080:8080
 
   backend:
-    image: kwalter94/khodo:latest
+    image: "kwalter94/khodo:${TAG:-latest}"
     command: /khodo/start_server
     environment:
       <<: *lucky-env
@@ -30,7 +30,7 @@ services:
     restart: on-failure
 
   db-setup:
-    image: kwalter94/khodo:latest
+    image: "kwalter94/khodo:${TAG:-latest}"
     command: sh -c "/khodo/tasks db.migrate && /khodo/tasks db.seed.required_data"
     environment:
       <<: *lucky-env
