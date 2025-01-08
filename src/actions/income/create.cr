@@ -1,4 +1,5 @@
 class Income::Create < BrowserAction
+  # ameba:disable Lint/UselessAssign
   param account_id : Int64
 
   post "/income" do
@@ -8,11 +9,11 @@ class Income::Create < BrowserAction
       .preload_currency
       .find(account_id)
 
-    SaveIncome.create(params, account: account, owner: current_user) do |operation, transaction|
-      if transaction
+    SaveIncome.create(params, account: account, owner: current_user) do |op, tx|
+      if tx
         redirect Accounts::Show.with(account.id)
       else
-        html Income::NewPage, operation: operation
+        html Income::NewPage, operation: op
       end
     end
   end

@@ -1,5 +1,5 @@
 class Expenses::New < BrowserAction
-  param account_id : Int64
+  param account_id : Int64 # ameba:disable Lint/UselessAssign
 
   get "/expenses/new/" do
     account = AccountQuery
@@ -9,6 +9,6 @@ class Expenses::New < BrowserAction
       .find(account_id)
 
     html NewPage,
-      operation: SaveExpense.new(account: account, owner: current_user)
+      operation: SaveExpense.new(account: account, owner: current_user, transaction_date: Time.local)
   end
 end

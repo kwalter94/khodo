@@ -37,6 +37,7 @@ module ProcessTransaction
     validate_source_and_destination_accounts
     validate_accounts_ownership
     validate_exchange_rate
+    validate_tags
   end
 
   def current_user_accounts : Enumerable(Account)
@@ -72,6 +73,10 @@ module ProcessTransaction
         end
       end
     end
+  end
+
+  private def validate_tags
+    tags.add_error("at least one tag is required") if tags.value.try(&.empty?)
   end
 
   @to_account : Account?

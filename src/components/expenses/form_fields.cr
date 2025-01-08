@@ -15,7 +15,7 @@ class Expenses::FormFields < BaseComponent
     end
 
     mount Shared::Field, operation.tags do |html|
-      html.multi_select_input do
+      html.multi_select_input attrs: [:required] do
         options = operation.current_user_tags.map { |tag| {tag.name, tag.id} }
         options_for_select operation.tags, options
       end
