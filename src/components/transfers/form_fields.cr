@@ -1,6 +1,6 @@
 class Transfers::FormFields < BaseComponent
-  needs account : Account
-  needs operation : SaveTransaction
+  needs account : Account           # ameba:disable Lint/UselessAssign
+  needs operation : SaveTransaction # ameba:disable Lint/UselessAssign
 
   def render
     mount Shared::Field, operation.description do |html|

@@ -1,5 +1,5 @@
 class AccountType < BaseModel
   table do
-    column name : String
+    column name : String # ameba:disable Lint/UselessAssign
   end
 end

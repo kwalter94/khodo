@@ -1,6 +1,6 @@
 # Generates and decodes JSON Web Tokens for Authenticating users.
 class UserToken
-  Habitat.create { setting stubbed_token : String? }
+  Habitat.create { setting stubbed_token : String? } # ameba:disable Lint/UselessAssign
   ALGORITHM = JWT::Algorithm::HS256
 
   def self.generate(user : User) : String
