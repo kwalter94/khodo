@@ -1,5 +1,9 @@
 require "./shards"
 
+module Khodo
+  VERSION = {{ `shards version #{__DIR__}`.chomp.stringify }}
+end
+
 # Load the asset manifest
 Lucky::AssetHelpers.load_manifest "public/mix-manifest.json"
 

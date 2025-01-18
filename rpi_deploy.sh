@@ -9,7 +9,7 @@ if [ -z $1 ]; then
 fi
 
 server=$1
-version=$(git describe --tags)
+version=v$(shards version)
 
 echo "Building image"
 docker buildx build --platform linux/arm64/v8 --load -f docker/Dockerfile -t kwalter94/khodo:latest -t kwalter94/khodo:$version .

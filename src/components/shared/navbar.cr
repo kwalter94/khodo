@@ -56,6 +56,8 @@ class Shared::Navbar < BaseComponent
           role: "button",
         ) { text current_user.email }
         ul aria_labelledby: "user-dropdown", class: "dropdown-menu" do
+          li { small "version: #{Khodo::VERSION}", class: "dropdown-item-text text-muted" }
+          li { hr class: "dropdown-divider" }
           dropdown_link "Properties", to: UserProperties::Edit
           dropdown_link "Security", to: "#"
           li { hr class: "dropdown-divider" }
