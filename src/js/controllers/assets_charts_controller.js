@@ -23,34 +23,7 @@ export default class extends Controller {
 
     /** @type Array */
     const report = (await response.json()).filter(({period}) => period <= 12);
-
-    this.plotAssetsDistributionChart(report);
     this.plotAssetsGrowthChart(report);
-  }
-
-  plotAssetsDistributionChart(data) {
-    data = data.filter(({balance, period}) => balance > 1 && period == 1);
-    const ctx = this.element.querySelector("#assets-distribution");
-
-    new Chart(ctx, {
-      type: "pie",
-      data: {
-        labels: data.map(({account_name}) => account_name),
-        datasets: [
-          {
-            label: "Asset Accounts",
-            data: data.map(({balance}) => balance),
-            borderWidth: 1,
-          }
-        ],
-      },
-      options: {
-        plugins: {
-          legend: {display: true},
-        },
-        responsive: true,
-      },
-    });
   }
 
   plotAssetsGrowthChart(report) {

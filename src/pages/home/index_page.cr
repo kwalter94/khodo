@@ -1,8 +1,8 @@
 class Home::IndexPage < MainLayout
-  needs reporting_currency : Currency
-  needs currencies : Enumerable(Currency)
-  needs total_assets : Float64
-  needs new_assets : Float64
+  needs reporting_currency : Currency     # ameba:disable Lint/UselessAssign
+  needs currencies : Enumerable(Currency) # ameba:disable Lint/UselessAssign
+  needs total_assets : Float64            # ameba:disable Lint/UselessAssign
+  needs new_assets : Float64              # ameba:disable Lint/UselessAssign
 
   def content
     div class: "row" { render_menu }
@@ -47,12 +47,12 @@ class Home::IndexPage < MainLayout
   end
 
   private def render_asset_charts_section
-    div class: "col col-lg-6 col-12" do
-      h6 "Asset Distribution", class: "text-center"
-      empty_tag "canvas", id: "assets-distribution", class: "chart"
-    end
+    # div class: "col col-lg-6 col-12" do
+    #   h6 "Asset Distribution", class: "text-center"
+    #   empty_tag "canvas", id: "assets-distribution", class: "chart"
+    # end
 
-    div class: "col col-lg-6 col-12" do
+    div class: "col col-12" do
       h6 "Asset Growth", class: "text-center"
       empty_tag "canvas", id: "assets-growth", class: "chart"
     end
