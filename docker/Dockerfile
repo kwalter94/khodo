@@ -1,4 +1,4 @@
-FROM --platform=$BUILDPLATFORM crystallang/crystal:1.13 AS cross_compile_crystal
+FROM --platform=$BUILDPLATFORM crystallang/crystal:1.14 AS cross_compile_crystal
 
 ARG TARGETARCH
 
