@@ -1,8 +1,13 @@
 class Currencies::NewPage < MainLayout
-  needs operation : SaveCurrency
+  needs operation : SaveCurrency # ameba:disable Lint/UselessAssign
   quick_def page_title, "New Currency"
 
   def content
+    mount Shared::BreadCrumb,
+      path: [
+        {"Currencies", Currencies::Index.route},
+        {"New", Currencies::New.route},
+      ]
     div class: "row" { h1 "New Currency" }
     div class: "row" { render_currency_form }
   end

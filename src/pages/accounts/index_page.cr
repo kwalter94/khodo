@@ -1,13 +1,16 @@
 class Accounts::IndexPage < MainLayout
-  needs accounts : Enumerable(CumulativeAccountBalanceReport)
-  needs currencies : Enumerable(Currency)
-  needs reporting_currency : Currency
+  needs accounts : Enumerable(CumulativeAccountBalanceReport) # ameba:disable Lint/UselessAssign
+  needs currencies : Enumerable(Currency)                     # ameba:disable Lint/UselessAssign
+  needs reporting_currency : Currency                         # ameba:disable Lint/UselessAssign
 
   quick_def page_title, "All Accounts"
 
   def content
     div class: "row" do
-      h3 class: "col col-12 col-md-8" { text "All Accounts" }
+      h3 class: "col col-12 col-md-8" do
+        text "Accounts"
+      end
+
       div class: "col col-12 col-md-3 offset-md-1" do
         div class: "d-grid gap-2" do
           link "New Account", to: Accounts::New, class: "btn btn-primary"

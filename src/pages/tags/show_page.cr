@@ -1,10 +1,15 @@
 class Tags::ShowPage < MainLayout
-  needs tag : Tag
-  needs currencies : Enumerable(Currency)
-  needs reporting_currency : Currency
+  needs tag : Tag                         # ameba:disable Lint/UselessAssign
+  needs currencies : Enumerable(Currency) # ameba:disable Lint/UselessAssign
+  needs reporting_currency : Currency     # ameba:disable Lint/UselessAssign
   quick_def page_title, "Tag: #{tag.name}"
 
   def content
+    mount Shared::BreadCrumb,
+      path: [
+        {"Tags", Tags::Index.route},
+        {truncate_text(tag.name), Tags::Show.with(tag.id)},
+      ]
     div class: "row" do
       div class: "col col-12 col-md-10" { h1 tag.name }
       div class: "col col-12 col-md-2" { render_actions }

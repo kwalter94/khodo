@@ -1,8 +1,14 @@
 class Tags::NewPage < MainLayout
-  needs operation : SaveTag
+  needs operation : SaveTag # ameba:disable Lint/UselessAssign
   quick_def page_title, "New Tag"
 
   def content
+    mount Shared::BreadCrumb,
+      path: [
+        {"Tags", Tags::Index.route},
+        {"New", Tags::New.route},
+      ]
+
     h1 "New Tag"
     render_tag_form(operation)
   end

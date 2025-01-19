@@ -1,12 +1,18 @@
 class ExchangeRates::EditPage < MainLayout
-  needs operation : SaveExchangeRate
-  needs exchange_rate : ExchangeRate
-  needs currencies : Enumerable(Currency)
+  needs operation : SaveExchangeRate      # ameba:disable Lint/UselessAssign
+  needs exchange_rate : ExchangeRate      # ameba:disable Lint/UselessAssign
+  needs currencies : Enumerable(Currency) # ameba:disable Lint/UselessAssign
 
   quick_def page_title, "Edit ExchangeRate with id: #{exchange_rate.id}"
 
   def content
-    link "Back to all ExchangeRates", ExchangeRates::Index
+    mount Shared::BreadCrumb,
+      path: [
+        {"Exchange Rates", ExchangeRates::Index.route},
+        {exchange_rate.id.to_s, ExchangeRates::Show.with(exchange_rate.id)},
+        {"Edit", ExchangeRates::Edit.with(exchange_rate.id)},
+      ]
+
     h1 "Edit ExchangeRate with id: #{exchange_rate.id}"
     render_exchange_rate_form(operation)
   end

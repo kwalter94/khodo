@@ -1,7 +1,7 @@
 class UserProperties::EditPage < MainLayout
-  needs operation : SaveUserProperties
-  needs user_properties : UserProperties
-  needs currencies : Enumerable(Currency)
+  needs operation : SaveUserProperties    # ameba:disable Lint/UselessAssign
+  needs user_properties : UserProperties  # ameba:disable Lint/UselessAssign
+  needs currencies : Enumerable(Currency) # ameba:disable Lint/UselessAssign
 
   quick_def page_title, "Edit Properties"
 

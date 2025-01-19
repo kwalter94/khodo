@@ -1,10 +1,16 @@
 class Accounts::ShowPage < MainLayout
-  needs account : Account
-  needs balance : CumulativeAccountBalanceReport
-  needs transactions : TransactionQuery
-  needs pages : Lucky::Paginator
+  needs account : Account                        # ameba:disable Lint/UselessAssign
+  needs balance : CumulativeAccountBalanceReport # ameba:disable Lint/UselessAssign
+  needs transactions : TransactionQuery          # ameba:disable Lint/UselessAssign
+  needs pages : Lucky::Paginator                 # ameba:disable Lint/UselessAssign
 
   def content
+    mount Shared::BreadCrumb,
+      path: [
+        {"Accounts", Accounts::Index.route},
+        {truncate_text(account.name, length: 20), Accounts::Show.with(account.id)},
+      ]
+
     div class: "row" { render_actions }
     div class: "row" { render_account_fields }
     div class: "row" { render_transactions }

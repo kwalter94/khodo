@@ -1,9 +1,15 @@
 class Transfers::EditPage < MainLayout
-  needs account : Account
-  needs operation : SaveTransaction
-  needs transaction : Transaction
+  needs account : Account           # ameba:disable Lint/UselessAssign
+  needs operation : SaveTransaction # ameba:disable Lint/UselessAssign
+  needs transaction : Transaction   # ameba:disable Lint/UselessAssign
 
   def content
+    mount Shared::BreadCrumb,
+      path: [
+        {"Accounts", Accounts::Index.route},
+        {truncate_text(account.name), Accounts::Show.with(account.id)},
+        {"Edit Transfer", Accounts::Show.with(account.id)},
+      ]
     div class: "row" do
       div class: "col-12" do
         h1 "Editing Transfer ##{transaction.id}"

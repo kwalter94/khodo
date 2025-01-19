@@ -1,14 +1,20 @@
 class Accounts::EditPage < MainLayout
-  needs operation : SaveAccount
-  needs account : Account
-  needs account_types : Enumerable(AccountType)
-  needs currencies : Enumerable(Currency)
+  needs operation : SaveAccount                 # ameba:disable Lint/UselessAssign
+  needs account : Account                       # ameba:disable Lint/UselessAssign
+  needs account_types : Enumerable(AccountType) # ameba:disable Lint/UselessAssign
+  needs currencies : Enumerable(Currency)       # ameba:disable Lint/UselessAssign
 
-  quick_def page_title, "Edit Account with id: #{account.id}"
+  quick_def page_title, "Edit Account ##{account.id}"
 
   def content
-    link "Back to all Accounts", Accounts::Index
-    h1 "Edit Account with id: #{account.id}"
+    mount Shared::BreadCrumb,
+      path: [
+        {"Accounts", Accounts::Index.route},
+        {truncate_text(account.name), Accounts::Show.with(account.id)},
+        {"Edit", Accounts::Edit.with(account.id)},
+      ]
+
+    h1 "Editing \"#{account.name}\""
     render_account_form(operation)
   end
 

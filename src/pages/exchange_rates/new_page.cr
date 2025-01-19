@@ -1,9 +1,14 @@
 class ExchangeRates::NewPage < MainLayout
-  needs operation : SaveExchangeRate
-  needs currencies : Enumerable(Currency)
+  needs operation : SaveExchangeRate      # ameba:disable Lint/UselessAssign
+  needs currencies : Enumerable(Currency) # ameba:disable Lint/UselessAssign
   quick_def page_title, "New ExchangeRate"
 
   def content
+    mount Shared::BreadCrumb,
+      path: [
+        {"Exchange Rates", ExchangeRates::Index.route},
+        {"New", ExchangeRates::New.route},
+      ]
     div class: "row" { h1 "New ExchangeRate" }
     div class: "row" { render_exchange_rate_form }
   end

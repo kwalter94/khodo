@@ -1,9 +1,14 @@
 class ExchangeRates::ShowPage < MainLayout
-  needs exchange_rate : ExchangeRate
+  needs exchange_rate : ExchangeRate # ameba:disable Lint/UselessAssign
   quick_def page_title, "ExchangeRate with id: #{exchange_rate.id}"
 
   def content
-    link "Back to all ExchangeRates", ExchangeRates::Index
+    mount Shared::BreadCrumb,
+      path: [
+        {"Exchange Rates", ExchangeRates::Index.route},
+        {exchange_rate.id.to_s, ExchangeRates::Show.with(exchange_rate.id)},
+      ]
+
     h1 "ExchangeRate with id: #{exchange_rate.id}"
     render_actions
     render_exchange_rate_fields

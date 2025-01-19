@@ -1,10 +1,16 @@
 class Currencies::EditPage < MainLayout
-  needs operation : SaveCurrency
-  needs currency : Currency
+  needs operation : SaveCurrency # ameba:disable Lint/UselessAssign
+  needs currency : Currency      # ameba:disable Lint/UselessAssign
   quick_def page_title, "Edit Currency with id: #{currency.id}"
 
   def content
-    div class: "row" { h1 "Edit Currency \"#{currency.name}\"" }
+    mount Shared::BreadCrumb,
+      path: [
+        {"Currencies", Currencies::Index.route},
+        {truncate_text(currency.name), Currencies::Show.with(currency.id)},
+        {"Edit", Currencies::New.route},
+      ]
+    div class: "row" { h1 "Editing Currency \"#{currency.name}\"" }
     div class: "row" { render_currency_form }
   end
 

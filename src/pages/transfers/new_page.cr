@@ -1,8 +1,15 @@
 class Transfers::NewPage < MainLayout
-  needs account : Account
-  needs operation : SaveTransaction
+  needs account : Account           # ameba:disable Lint/UselessAssign
+  needs operation : SaveTransaction # ameba:disable Lint/UselessAssign
 
   def content
+    mount Shared::BreadCrumb,
+      path: [
+        {"Accounts", Accounts::Index.route},
+        {truncate_text(account.name), Accounts::Show.with(account.id)},
+        {"New Transfer", Transfers::New.route(account_id: account.id)},
+      ]
+
     h1 "Transfer from #{account.name}"
     render_transaction_form
   end
