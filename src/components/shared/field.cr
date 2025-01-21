@@ -32,8 +32,8 @@ class Shared::Field(T) < BaseComponent
   # Raises a helpful error if component receives an unpermitted attribute
   include Lucky::CatchUnpermittedAttribute
 
-  needs attribute : Avram::PermittedAttribute(T)
-  needs label_text : String?
+  needs attribute : Avram::PermittedAttribute(T) # ameba:disable Lint/UselessAssign
+  needs label_text : String?                     # ameba:disable Lint/UselessAssign
 
   def render(&)
     div class: "mb-3 row" do

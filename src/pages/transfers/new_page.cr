@@ -10,8 +10,13 @@ class Transfers::NewPage < MainLayout
         {"New Transfer", Transfers::New.route(account_id: account.id)},
       ]
 
-    h1 "Transfer from #{account.name}"
-    render_transaction_form
+    div class: "row" do
+      h1 "Transfer from #{account.name}"
+    end
+
+    div class: "row" do
+      render_transaction_form
+    end
   end
 
   def render_transaction_form
