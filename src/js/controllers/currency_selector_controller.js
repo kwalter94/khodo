@@ -5,8 +5,9 @@ export default class extends Controller {
 
   onChange() {
     const currencyId = this.currencyIdTarget.value;
-    const currentLocation = window.location.toString().split("?")[0];
+    const url = new URL(window.location.href);
+    url.searchParams.set("currency_id", currencyId);
 
-    window.location.assign(`${currentLocation}?currency_id=${currencyId}`);
+    window.location.assign(url.toString());
   }
 }
