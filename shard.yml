@@ -1,6 +1,6 @@
 ---
 name: khodo
-version: 0.2.2
+version: "0.3.0-alpha"
 targets:
   khodo:
     main: src/khodo.cr
@@ -32,9 +32,6 @@ dependencies:
   jwt:
     github: crystal-community/jwt
     version: ~> 1.6.1
-  sqlite3:
-    github: crystal-lang/crystal-sqlite3
-    version: ~> 0.21.0
 development_dependencies:
   lucky_flow:
     github: luckyframework/lucky_flow
