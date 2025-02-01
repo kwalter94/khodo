@@ -3,6 +3,7 @@ class Accounts::ShowPage < MainLayout
   needs balance : CumulativeAccountBalanceReport # ameba:disable Lint/UselessAssign
   needs transactions : TransactionQuery          # ameba:disable Lint/UselessAssign
   needs pages : Lucky::Paginator                 # ameba:disable Lint/UselessAssign
+  needs search_description : String?             # ameba:disable Lint/UselessAssign
 
   def content
     mount Shared::BreadCrumb,
@@ -13,6 +14,7 @@ class Accounts::ShowPage < MainLayout
 
     div class: "row" { render_actions }
     div class: "row" { render_account_fields }
+    div class: "row" { render_search_filters }
     div class: "row" { render_transactions }
     div class: "row" { render_transactions_paginator }
   end
@@ -61,6 +63,23 @@ class Accounts::ShowPage < MainLayout
           account_property "Deductions (this month):", format_money(balance.deductions, account.currency)
           account_property "Net Additions (this month):", format_money(balance.net_receipts, account.currency)
         end
+      end
+    end
+  end
+
+  private def render_search_filters
+    form id: "search_description", action: Accounts::Show.path(account.id), class: "form" do
+      div class: "form-floating col col-12" do
+        input(
+          id: "search_description",
+          type: "text",
+          class: "form-control",
+          placeholder: "Filter Description",
+          name: "search_description",
+          value: search_description || "",
+        )
+
+        label for: "search_description" { text "Filter Description" }
       end
     end
   end
