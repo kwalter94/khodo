@@ -18,7 +18,8 @@ docker save -o khodo-$version.img kwalter94/khodo:$version kwalter94/khodo:lates
 echo "Copying image to pi"
 ssh $server "[ -d khodo ] || mkdir khodo"
 rsync --progress khodo-$version.img docker-compose-prod.yml $server:khodo/
-ssh $server "cd khodo && docker load -i khodo-$version.img && TAG=$version docker-compose -f docker-compose-prod.yml up --wait --detach && rm khodo-$version.img"
+ssh $server "cd khodo && docker load -i khodo-$version.img && TAG=$version docker-compose -f docker-compose-prod.yml up --wait --detach || rm -f khodo-$version.img"
+
 rm -f khodo-$version.img
 
 echo "Update done"
