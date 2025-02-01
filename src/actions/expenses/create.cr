@@ -1,5 +1,5 @@
 class Expenses::Create < BrowserAction
-  param account_id : Int64
+  param account_id : Int64 # ameba:disable Lint/UselessAssign
 
   post "/expenses" do
     account = AccountQuery
@@ -12,7 +12,7 @@ class Expenses::Create < BrowserAction
       if transaction
         redirect Accounts::Show.with(account.id)
       else
-        html Expenses::NewPage, operation: operation
+        html Expenses::NewPage, account: account, operation: operation
       end
     end
   end

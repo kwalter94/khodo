@@ -1,7 +1,7 @@
 class Accounts::NewPage < MainLayout
-  needs operation : SaveAccount
-  needs account_types : Enumerable(AccountType)
-  needs currencies : Enumerable(Currency)
+  needs operation : SaveAccount                 # ameba:disable Lint/UselessAssign
+  needs account_types : Enumerable(AccountType) # ameba:disable Lint/UselessAssign
+  needs currencies : Enumerable(Currency)       # ameba:disable Lint/UselessAssign
 
   quick_def page_title, "New Account"
 
@@ -17,7 +17,8 @@ class Accounts::NewPage < MainLayout
         mount Accounts::FormFields,
           operation: operation,
           account_types: account_types,
-          currencies: currencies
+          currencies: currencies,
+          ledgers: ledgers
 
         mount Shared::SubmitButton
       end

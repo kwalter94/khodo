@@ -2,13 +2,14 @@ class Accounts::IndexPage < MainLayout
   needs accounts : Enumerable(CumulativeAccountBalanceReport) # ameba:disable Lint/UselessAssign
   needs currencies : Enumerable(Currency)                     # ameba:disable Lint/UselessAssign
   needs reporting_currency : Currency                         # ameba:disable Lint/UselessAssign
+  needs ledger : Ledger                                       # ameba:disable Lint/UselessAssign
 
-  quick_def page_title, "All Accounts"
+  quick_def page_title, "#{ledger.name} Accounts"
 
   def content
     div class: "row" do
       h3 class: "col col-12 col-md-8" do
-        text "Accounts"
+        text "#{ledger.name} Accounts"
       end
 
       div class: "col col-12 col-md-3 offset-md-1" do

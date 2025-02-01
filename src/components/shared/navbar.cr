@@ -1,5 +1,6 @@
 class Shared::Navbar < BaseComponent
-  needs current_user : User # ameba:disable Lint/UselessAssign
+  needs current_user : User          # ameba:disable Lint/UselessAssign
+  needs ledgers : Enumerable(Ledger) # ameba:disable Lint/UselessAssign
 
   def render
     nav class: "navbar navbar-expand-lg navbar-dark bg-dark" do
@@ -27,22 +28,16 @@ class Shared::Navbar < BaseComponent
     div class: "collapse navbar-collapse", id: "navbarSupportedContent" do
       ul class: "navbar-nav me-auto mb-2 mb-lg-0" do
         nav_link "Home", to: Home::Index
-        nav_link "Accounts", to: Accounts::Index
-        nav_link "Tags", to: Tags::Index
-
-        li class: "nav-item dropdown" do
-          a(
-            aria_expanded: "false",
-            class: on_currency_page? ? "nav-link dropdown-togger" : "nav-link dropdown-toggle text-light",
-            data_bs_toggle: "dropdown",
-            href: "#",
-            id: "metadata-dropdown",
-            role: "button",
-          ) { text "Currencies" }
-          ul aria_labelledby: "metadata-dropdown", class: "dropdown-menu" do
-            dropdown_link "Manage Currencies", to: Currencies::Index
-            dropdown_link "Manage Exchange Rates", to: ExchangeRates::Index
+        nav_dropdown "Ledgers", id: "ledgers-dropdown" do
+          ledgers.each do |ledger|
+            dropdown_link ledger.name, to: Accounts::Index.route(ledger_id: ledger.id)
           end
+        end
+
+        nav_link "Tags", to: Tags::Index
+        nav_dropdown "Currencies", id: "metadata-dropdown" do
+          dropdown_link "Manage Currencies", to: Currencies::Index
+          dropdown_link "Manage Exchange Rates", to: ExchangeRates::Index
         end
       end
 
@@ -79,11 +74,27 @@ class Shared::Navbar < BaseComponent
     end
   end
 
-  private def dropdown_link(label : String, to : BrowserAction.class | String, **extra_attrs)
-    if to.is_a?(BrowserAction.class)
-      li { link label, **extra_attrs, to: to, class: "dropdown-item" }
-    else
+  private def nav_dropdown(label : String, id : String, active = false, &block)
+    li class: "nav-item dropdown" do
+      a(
+        aria_expanded: "false",
+        class: active ? "nav-link dropdown-toggle" : "nav-link dropdown-toggle text-light",
+        data_bs_toggle: "dropdown",
+        href: "#",
+        id: id,
+        role: "button",
+      ) do
+        text label
+      end
+      ul(aria_labelledby: id, class: "dropdown-menu", &block)
+    end
+  end
+
+  private def dropdown_link(label : String, to : Lucky::RouteHelper | BrowserAction.class | String, **extra_attrs)
+    if to.is_a?(String)
       li { a label, **extra_attrs, href: to, class: "dropdown-item" }
+    else
+      li { link label, **extra_attrs, to: to, class: "dropdown-item" }
     end
   end
 

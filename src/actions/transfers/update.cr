@@ -1,5 +1,5 @@
 class Transfers::Update < BrowserAction
-  param account_id : Int64
+  param account_id : Int64 # ameba:disable Lint/UselessAssign
 
   put "/transfers/:transaction_id" do
     tx = TransactionQuery
@@ -11,6 +11,8 @@ class Transfers::Update < BrowserAction
     account = AccountQuery
       .new
       .owner_id(current_user.id)
+      .preload_currency
+      .preload_ledger
       .find(account_id)
 
     SaveTransaction.update(tx, params, owner: current_user) do |operation, _|

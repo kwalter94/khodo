@@ -1,10 +1,11 @@
 class Income::NewPage < MainLayout
+  needs account : Account      # ameba:disable Lint/UselessAssign
   needs operation : SaveIncome # ameba:disable Lint/UselessAssign
 
   def content
     mount Shared::BreadCrumb,
       path: [
-        {"Accounts", Accounts::Index.route},
+        {"#{account.ledger.try(&.name)} Accounts", Accounts::Index.route(ledger_id: account.ledger_id)},
         {truncate_text(operation.account.name), Accounts::Show.with(operation.account.id)},
         {"New Income", Income::New.route(account_id: operation.account.id)},
       ]

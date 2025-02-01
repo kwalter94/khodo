@@ -13,6 +13,7 @@ class Transfers::Edit < BrowserAction
       AccountQuery
         .new
         .preload_currency
+        .preload_ledger
         .owner_id(current_user.id)
         .find(account_id)
 

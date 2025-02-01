@@ -38,10 +38,15 @@ abstract class BrowserAction < Lucky::Action
   # In default Lucky apps, the `MainLayout` declares it `needs current_user : User`
   # so that any page that inherits from MainLayout can use the `current_user`
   expose current_user
+  expose ledgers
 
   # This method tells Authentic how to find the current user
   # The 'memoize' macro makes sure only one query is issued to find the user
   private memoize def find_current_user(id : String | User::PrimaryKeyType) : User?
     UserQuery.new.id(id).first?
+  end
+
+  private def ledgers : Enumerable(Ledger)
+    current_user.try { |user| LedgerQuery.new.owner_id(user.id) } || [] of Ledger
   end
 end

@@ -3,7 +3,8 @@ abstract class MainLayout
 
   # 'needs current_user : User' makes it so that the current_user
   # is always required for pages using MainLayout
-  needs current_user : User # ameba:disable Lint/UselessAssign
+  needs current_user : User          # ameba:disable Lint/UselessAssign
+  needs ledgers : Enumerable(Ledger) # ameba:disable Lint/UselessAssign
 
   abstract def content
   abstract def page_title
@@ -30,7 +31,7 @@ abstract class MainLayout
       mount Shared::LayoutHead, page_title: page_title
 
       body do
-        mount Shared::Navbar, current_user
+        mount Shared::Navbar, current_user: current_user, ledgers: ledgers
         mount Shared::FlashMessages, context.flash
 
         div class: "container" do

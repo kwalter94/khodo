@@ -1,8 +1,8 @@
 class SaveAccount < Account::SaveOperation
   # To save user provided params to the database, you must permit them
   # https://luckyframework.org/guides/database/saving-records#perma-permitting-columns
-  needs owner : User
-  permit_columns name, type_id, currency_id
+  needs owner : User # ameba:disable Lint/UselessAssign
+  permit_columns name, type_id, currency_id, ledger_id
 
   before_save do
     owner_id.value = owner.id

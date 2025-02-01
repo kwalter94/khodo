@@ -1,5 +1,5 @@
 class Income::Update < BrowserAction
-  param account_id : Int64
+  param account_id : Int64 # ameba:disable Lint/UselessAssign
 
   put "/income/:transaction_id" do
     tx = TransactionQuery
@@ -7,10 +7,10 @@ class Income::Update < BrowserAction
       .owner_id(current_user.id)
       .to_account_id(account_id)
       .find(transaction_id)
-
     account = AccountQuery
       .new
       .preload_currency
+      .preload_ledger
       .owner_id(current_user.id)
       .find(account_id)
 
@@ -20,7 +20,7 @@ class Income::Update < BrowserAction
         redirect Accounts::Show.with(account_id)
       else
         flash.failure = "Error updating income transaction ##{updated_tx.id}"
-        html EditPage, operation: operation, transaction: updated_tx
+        html EditPage, operation: operation, transaction: updated_tx, account: account
       end
     end
   end

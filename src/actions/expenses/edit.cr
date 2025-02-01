@@ -1,5 +1,5 @@
 class Expenses::Edit < BrowserAction
-  param account_id : Int64
+  param account_id : Int64 # ameba:disable Lint/UselessAssign
 
   get "/expenses/:transaction_id/edit" do
     tx =
@@ -14,9 +14,11 @@ class Expenses::Edit < BrowserAction
         .new
         .preload_currency
         .owner_id(current_user.id)
+        .preload_ledger
         .find(account_id)
 
     html EditPage,
+      account: account,
       operation: SaveExpense.new(
         tx,
         account: account,

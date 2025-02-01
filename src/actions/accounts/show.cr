@@ -5,6 +5,7 @@ class Accounts::Show < BrowserAction
       .owner_id(current_user.id)
       .preload_type
       .preload_currency
+      .preload_ledger
       .find(account_id)
 
     account_balance = CumulativeAccountBalanceReportQuery

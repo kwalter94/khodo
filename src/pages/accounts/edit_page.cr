@@ -9,7 +9,7 @@ class Accounts::EditPage < MainLayout
   def content
     mount Shared::BreadCrumb,
       path: [
-        {"Accounts", Accounts::Index.route},
+        {"#{account.ledger.try(&.name)} Accounts", Accounts::Index.route(ledger_id: account.ledger_id)},
         {truncate_text(account.name), Accounts::Show.with(account.id)},
         {"Edit", Accounts::Edit.with(account.id)},
       ]
@@ -23,7 +23,8 @@ class Accounts::EditPage < MainLayout
       mount Accounts::FormFields,
         operation: operation,
         account_types: account_types,
-        currencies: currencies
+        currencies: currencies,
+        ledgers: ledgers
 
       mount Shared::SubmitButton, "Update", data_disable_with: "Updating Accounts..."
     end

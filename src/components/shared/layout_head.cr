@@ -1,5 +1,5 @@
 class Shared::LayoutHead < BaseComponent
-  needs page_title : String
+  needs page_title : String # ameba:disable Lint/UselessAssign
 
   def render
     head do

@@ -20,7 +20,7 @@ class Expenses::Update < BrowserAction
         redirect Accounts::Show.with(account_id)
       else
         flash.failure = "Error updating expense transaction ##{updated_tx.id}"
-        html EditPage, operation: operation, transaction: updated_tx
+        html EditPage, account: account, operation: operation, transaction: updated_tx
       end
     end
   end

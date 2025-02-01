@@ -5,10 +5,16 @@ class Income::New < BrowserAction
     account = AccountQuery
       .new
       .preload_currency
+      .preload_ledger
       .owner_id(current_user.id)
       .find(account_id)
 
     html NewPage,
-      operation: SaveIncome.new(account: account, owner: current_user, transaction_date: Time.local)
+      account: account,
+      operation: SaveIncome.new(
+        account: account,
+        owner: current_user,
+        transaction_date: Time.local,
+      )
   end
 end

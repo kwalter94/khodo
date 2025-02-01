@@ -6,7 +6,7 @@ class Transfers::EditPage < MainLayout
   def content
     mount Shared::BreadCrumb,
       path: [
-        {"Accounts", Accounts::Index.route},
+        {"#{account.ledger.try(&.name)} Accounts", Accounts::Index.route(ledger_id: account.ledger_id)},
         {truncate_text(account.name), Accounts::Show.with(account.id)},
         {"Edit Transfer", Accounts::Show.with(account.id)},
       ]

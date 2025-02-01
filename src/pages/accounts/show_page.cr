@@ -7,7 +7,7 @@ class Accounts::ShowPage < MainLayout
   def content
     mount Shared::BreadCrumb,
       path: [
-        {"Accounts", Accounts::Index.route},
+        {"#{account.ledger.try(&.name)} Accounts", Accounts::Index.route(ledger_id: account.ledger_id)},
         {truncate_text(account.name, length: 20), Accounts::Show.with(account.id)},
       ]
 

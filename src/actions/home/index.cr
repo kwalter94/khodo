@@ -1,7 +1,7 @@
 class Home::Index < BrowserAction
   Log = ::Log.for(self)
 
-  param currency_id : Int64? = nil
+  param currency_id : Int64? = nil # ameba:disable Lint/UselessAssign
 
   get "/" do
     currency = find_reporting_currency

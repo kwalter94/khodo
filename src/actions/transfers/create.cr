@@ -1,10 +1,11 @@
 class Transfers::Create < BrowserAction
-  param account_id : Int64
+  param account_id : Int64 # ameba:disable Lint/UselessAssign
 
   post "/transfers" do
     account = AccountQuery
       .new
       .preload_currency
+      .preload_ledger
       .owner_id(current_user.id)
       .find(account_id)
 
