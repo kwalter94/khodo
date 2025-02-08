@@ -3,14 +3,15 @@ class Accounts::Index < BrowserAction
   param currency_id : Int64? = nil # ameba:disable Lint/UselessAssign
 
   get "/accounts" do
-    currency = currency_id.try { |id| CurrencyQuery.new.owner_id(current_user.id).id(id).first? }
-    currency ||= CurrencyQuery.find_user_default_currency(current_user.id)
+    reporting_currency = currency_id.try { |id| CurrencyQuery.new.owner_id(current_user.id).id(id).first? }
+    reporting_currency ||= CurrencyQuery.find_user_default_currency(current_user.id)
     report = CumulativeAccountBalanceReportQuery
       .new
       .owner_id(current_user.id)
-      .currency_id(currency.id)
+      .currency_id(reporting_currency.id)
       .ledger_id(ledger_id || current_user_general_ledger.id)
       .period(1)
+      .account_type_name.not.in(["Income", "Expense"])
       .account_type_name.asc_order
       .account_name.asc_order
       .currency_name.asc_order
@@ -19,7 +20,7 @@ class Accounts::Index < BrowserAction
 
     html IndexPage,
       accounts: report,
-      reporting_currency: currency,
+      reporting_currency: reporting_currency,
       currencies: currencies,
       ledger: ledger
   rescue error : UserProperties::ConfigurationError
