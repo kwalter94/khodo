@@ -4,7 +4,7 @@ class Shared::LayoutHead < BaseComponent
   def render
     head do
       utf8_charset
-      title "My App - #{@page_title}"
+      title "Khodo - #{@page_title}"
       css_link asset("css/app.css")
       js_link asset("js/app.js"), defer: "true"
       csrf_meta_tags
