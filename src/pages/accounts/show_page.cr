@@ -68,18 +68,17 @@ class Accounts::ShowPage < MainLayout
   end
 
   private def render_search_filters
-    form id: "search_description", action: Accounts::Show.path(account.id), class: "form" do
-      div class: "form-floating col col-12" do
+    form id: "search_description", action: Accounts::Show.path(account.id), class: "form col col-12" do
+      div class: "input-group mb-3" do
+        span class: "input-group-text" { text "Search" }
         input(
           id: "search_description",
           type: "text",
-          class: "form-control",
-          placeholder: "Filter Description",
+          class: "form-control form-control-lg",
+          placeholder: "Description...",
           name: "search_description",
           value: search_description || "",
         )
-
-        label for: "search_description" { text "Filter Description" }
       end
     end
   end
@@ -92,8 +91,9 @@ class Accounts::ShowPage < MainLayout
             th { text "Date" }
             th { text "Type" }
             th { text "Description" }
-            th { text "Amount (#{account.currency.symbol})" }
-            th { text "Counterpart" }
+            th { text "Amount" }
+            th { text "D/E Amount" }
+            th { text "D/E Account" }
             th { text "Tags" }
             th { text "Actions" }
           end
@@ -103,15 +103,12 @@ class Accounts::ShowPage < MainLayout
               row = format_transaction(tx)
 
               tr do
-                td { text row.date }
-                td(class: row.css_class) { text row.type }
-                td { text row.description }
+                td { text tx.transaction_date.to_s("%Y-%m-%d") }
+                td(class: row.css_class) { text tx.type }
+                td { text tx.description }
                 td(class: row.css_class) { text row.amount }
-                td do
-                  text row.counterpart_amount
-                  text ["Expense", "Transfer from", "Receipt"].includes?(row.type) ? " to " : " from "
-                  link row.counterpart.name, to: Accounts::Show.with(row.counterpart.id)
-                end
+                td(class: row.css_class) { double_entry_amount(tx) }
+                td { double_entry_account(tx) }
                 td do
                   tx.tags.each do |tag|
                     link tag.name, to: Tags::Show.with(tag.id), class: "badge bg-primary"
@@ -119,11 +116,11 @@ class Accounts::ShowPage < MainLayout
                 end
                 td do
                   div class: "btn-group", role: "group", aria_label: "Actions" do
-                    if row.type == "Expense"
+                    if tx.type == "Expense" && account.type.name != "Expense"
                       link "Edit", to: Expenses::Edit.with(tx.id, account_id: account.id), class: "btn btn-primary"
-                    elsif row.type == "Income"
+                    elsif tx.type == "Income" && account.type.name != "Income"
                       link "Edit", to: Income::Edit.with(tx.id, account_id: account.id), class: "btn btn-primary"
-                    elsif row.type == "Transfer to" || row.type == "Transfer from"
+                    elsif tx.type == "Swap"
                       link "Edit", to: Transfers::Edit.with(tx.id, account_id: account.id), class: "btn btn-primary"
                     end
 
@@ -161,57 +158,70 @@ class Accounts::ShowPage < MainLayout
   end
 
   private record TransactionRow,
-    date : String,
-    type : String,
-    description : String,
     amount : String,
-    counterpart : Account,
-    counterpart_amount : String,
     css_class : String
 
   private def format_transaction(tx : Transaction) : TransactionRow
-    tx_type = tx.type(account)
+    tx_type = tx.type
     case tx_type
     when "Expense"
-      amount = format_money(tx.from_amount)
-      counterpart_amount = format_money(tx.to_amount, tx.to_account.currency)
-      counterpart = tx.to_account
+      amount = format_money(tx.from_amount, tx.from_account.currency)
       css_class = "table-danger"
     when "Income"
-      amount = format_money(tx.to_amount)
-      counterpart_amount = format_money(tx.from_amount, tx.from_account.currency)
-      counterpart = tx.from_account
+      amount = format_money(tx.to_amount, tx.to_account.currency)
       css_class = "table-success"
-    when "Transfer from"
-      amount = format_money(tx.from_amount)
-      counterpart_amount = format_money(tx.to_amount, tx.to_account.currency)
-      counterpart = tx.to_account
+    else # "Swap"
+      amount = if tx.from_account == account
+                 format_money(tx.from_amount, tx.from_account.currency)
+               else
+                 format_money(tx.to_amount, tx.to_account.currency)
+               end
+
       css_class = "table-warning"
-    when "Transfer to"
-      amount = format_money(tx.to_amount)
-      counterpart_amount = format_money(tx.from_amount, tx.from_account.currency)
-      counterpart = tx.from_account
-      css_class = "table-warning"
-    when "Receipt"
-      amount = format_money(tx.to_amount)
-      counterpart_amount = format_money(tx.to_amount, tx.to_account.currency)
-      counterpart = tx.to_account
-      css_class = "table-info"
-    else # "Payment"
-      amount = format_money(tx.from_amount)
-      counterpart_amount = format_money(tx.from_amount, tx.from_account.currency)
-      counterpart = tx.from_account
-      css_class = "table-danger"
     end
 
     TransactionRow.new(
-      date: tx.transaction_date.to_s("%Y-%m-%d"),
-      type: tx_type,
-      description: tx.description,
       amount: amount,
-      counterpart: counterpart,
-      counterpart_amount: counterpart_amount,
       css_class: css_class,
     )
+  end
+
+  private def double_entry_account(tx : Transaction)
+    case tx.type
+    when "Income"
+      if account == tx.to_account && account.type.name != "Income"
+        text "from: "
+        link tx.from_account.name, to: Accounts::Show.with(tx.from_account.id)
+      else
+        text "to: "
+        link tx.to_account.name, to: Accounts::Show.with(tx.to_account.id)
+      end
+    when "Expense"
+      if account == tx.from_account && account.type.name != "Expense"
+        text "to: "
+        link tx.to_account.name, to: Accounts::Show.with(tx.to_account.id)
+      else
+        text "from: "
+        link tx.from_account.name, to: Accounts::Show.with(tx.from_account.id)
+      end
+    else # Swap
+      if account == tx.from_account
+        text "to: "
+        link tx.to_account.name, to: Accounts::Show.with(tx.to_account.id)
+      else
+        text "from: "
+        link tx.from_account.name, to: Accounts::Show.with(tx.from_account.id)
+      end
+    end
+  end
+
+  private def double_entry_amount(tx : Transaction)
+    if account == tx.from_account
+      text format_money(tx.to_amount, tx.to_account.currency)
+    elsif account == tx.to_account
+      text format_money(tx.from_amount, tx.from_account.currency)
+    else
+      text " - "
+    end
   end
 end
