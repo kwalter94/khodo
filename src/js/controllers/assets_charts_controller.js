@@ -22,11 +22,14 @@ export default class extends Controller {
     }
 
     /** @type Array */
-    const report = (await response.json()).filter(({period}) => period <= 12);
+    const report = (await response.json()).filter(({period, account_type_name}) => {
+      return period <= 12 && !["Expense", "Income"].includes(account_type_name);
+    });
     this.plotAssetsGrowthChart(report);
   }
 
   plotAssetsGrowthChart(report) {
+    console.log(report);
     const ctx = this.element.querySelector("#assets-growth");
     let months = new Set();
     let accounts = new Map();

@@ -8,6 +8,8 @@ class CumulativeAccountBalanceReportSerializer < BaseSerializer
       period:                @report.period,
       account_id:            @report.account_id,
       account_name:          @report.account_name,
+      account_type_id:       @report.account_type_id,
+      account_type_name:     @report.account_type_name,
       currency_id:           @report.currency_id,
       currency_name:         @report.currency_name,
       receipts:              @report.receipts,
