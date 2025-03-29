@@ -5,8 +5,9 @@ class Expenses::New < BrowserAction
     account = AccountQuery
       .new
       .preload_currency
-      .owner_id(current_user.id)
       .preload_ledger
+      .preload_type
+      .owner_id(current_user.id)
       .find(account_id)
 
     html NewPage,

@@ -2,20 +2,20 @@ class Expenses::Edit < BrowserAction
   param account_id : Int64 # ameba:disable Lint/UselessAssign
 
   get "/expenses/:transaction_id/edit" do
-    tx =
-      TransactionQuery
-        .new
-        .owner_id(current_user.id)
-        .from_account_id(account_id)
-        .find(transaction_id)
+    tx = TransactionQuery
+      .new
+      .owner_id(current_user.id)
+      .from_account_id(account_id)
+      .find(transaction_id)
 
-    account =
-      AccountQuery
-        .new
-        .preload_currency
-        .owner_id(current_user.id)
-        .preload_ledger
-        .find(account_id)
+    account = AccountQuery
+      .new
+      .preload_currency
+      .preload_ledger
+      .preload_type
+      .owner_id(current_user.id)
+      .preload_ledger
+      .find(account_id)
 
     html EditPage,
       account: account,

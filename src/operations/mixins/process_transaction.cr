@@ -52,6 +52,8 @@ module ProcessTransaction
     AccountQuery
       .new
       .preload_currency
+      .preload_type
+      .preload_ledger
       .owner_id(owner.id)
       .where_type(AccountTypeQuery.new.name.in(["Asset", "Liability"]))
   end

@@ -6,6 +6,7 @@ class Transfers::New < BrowserAction
       .new
       .preload_currency
       .preload_ledger
+      .preload_type
       .owner_id(current_user.id)
       .find(account_id)
 

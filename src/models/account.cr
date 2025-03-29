@@ -13,6 +13,6 @@ class Account < BaseModel
   end
 
   def display_name : String
-    "#{name} (#{currency.name})"
+    "#{name} (#{currency.name}) - #{type.name}"
   end
 end
