@@ -5,10 +5,12 @@ export default class extends Controller {
   connect() {
     const params = new URLSearchParams(document.location.search);
     this.currency_id = params.get("currency_id");
-    this.load_report();
+    this
+      .fetchReport()
+      .then(report => this.plotAssetsGrowthChart(report));
   }
 
-  async load_report() {
+  async fetchReport() {
     let url = "/api/cumulative_assets_report";
     if (this.currency_id) {
       url = `${url}?currency_id=${this.currency_id}`;
@@ -22,31 +24,32 @@ export default class extends Controller {
     }
 
     /** @type Array */
-    const report = (await response.json()).filter(({period, account_type_name}) => {
-      return period <= 12 && !["Expense", "Income"].includes(account_type_name);
+    return (await response.json()).filter(({balance, period, account_type_name}) => {
+      return period <= 12 && balance != 0 && !["Expense", "Income"].includes(account_type_name);
     });
-    this.plotAssetsGrowthChart(report);
   }
 
   plotAssetsGrowthChart(report) {
     console.log(report);
-    const ctx = this.element.querySelector("#assets-growth");
     let months = new Set();
     let accounts = new Map();
 
-    for (const {month, account_name, balance} of report) {
+    for (const {month, account_name, account_type_name, balance, period} of report) {
       months.add(month);
-      if (!accounts.has(account_name)) {
-        accounts.set(account_name, []);
+      const display_name = `${account_name} - ${account_type_name}`;
+
+      if (!accounts.has(display_name)) {
+        accounts.set(display_name, Array(12).fill(0));
       }
 
-      accounts.get(account_name).push(balance);
+      const periods = accounts.get(display_name)
+      periods[periods.length - period] = balance;
     }
 
-    new Chart(ctx, {
+    new Chart(this.element, {
       type: "bar",
       data: {
-        labels: [...months.values()],
+        labels: [...months.values()].sort(),
         datasets: [...accounts.entries()].map(([label, data]) => ({label, data})),
       },
       options: {

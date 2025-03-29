@@ -8,9 +8,7 @@ export default class extends Controller {
 
     this
       .fetchSavingsReport(currency_id)
-      .then(report => {
-        this.renderIncomeVsExpensesChart(report);
-      });
+      .then(report => this.renderChart(report));
   }
 
   async fetchSavingsReport(currency_id) {
@@ -29,11 +27,10 @@ export default class extends Controller {
     return await response.json();
   }
 
-  async renderIncomeVsExpensesChart(report) {
-    const ctx = this.element.querySelector("#income-vs-expenses");
+  async renderChart(report) {
     report = report.filter(({period}) => period <= 12);
 
-    new Chart(ctx, {
+    new Chart(this.element, {
       type: "line",
       data: {
         labels: report.map(({month}) => month),

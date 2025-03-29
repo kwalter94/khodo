@@ -1,14 +1,21 @@
 class Home::IndexPage < MainLayout
+  record NetWorth,
+    value : Float64,
+    change : Float64,
+    total_assets : Float64,
+    new_assets : Float64,
+    total_liabilities : Float64,
+    new_liabilities : Float64
+
   needs reporting_currency : Currency     # ameba:disable Lint/UselessAssign
   needs currencies : Enumerable(Currency) # ameba:disable Lint/UselessAssign
-  needs total_assets : Float64            # ameba:disable Lint/UselessAssign
-  needs new_assets : Float64              # ameba:disable Lint/UselessAssign
+  needs net_worth : NetWorth              # ameba:disable Lint/UselessAssign
 
   def content
     div class: "row" { render_menu }
-    div class: "row" { render_net_worth_cards_section }
-    div class: "row", data_controller: "assets-charts" { render_asset_charts_section }
-    div class: "row", data_controller: "savings-charts" { render_savings_charts_section }
+    div class: "row" { render_net_worth_chart }
+    div class: "row" { render_cumulative_accounts_chart }
+    div class: "row" { render_savings_chart }
   end
 
   private def render_menu
@@ -32,36 +39,31 @@ class Home::IndexPage < MainLayout
     end
   end
 
-  private def render_net_worth_cards_section
+  private def render_net_worth_chart
     div class: "col col-md-4 col-12" do
-      number_card label: "Net Worth", number: total_assets, change: new_assets, color: "bg-primary"
+      number_card label: "Net Worth", number: net_worth.value, change: net_worth.change, color: "bg-primary"
     end
 
     div class: "col col-md-4 col-12" do
-      number_card label: "Assets", number: total_assets, change: new_assets, color: "bg-success"
+      number_card label: "Assets", number: net_worth.total_assets, change: net_worth.new_assets, color: "bg-success"
     end
 
     div class: "col col-md-4 col-12" do
-      number_card label: "Liabilities", number: 0.0, change: 0.0, color: "bg-danger"
+      number_card label: "Liabilities", number: net_worth.total_liabilities, change: net_worth.new_liabilities, color: "bg-danger"
     end
   end
 
-  private def render_asset_charts_section
-    # div class: "col col-lg-6 col-12" do
-    #   h6 "Asset Distribution", class: "text-center"
-    #   empty_tag "canvas", id: "assets-distribution", class: "chart"
-    # end
-
+  private def render_cumulative_accounts_chart
     div class: "col col-12" do
-      h6 "Asset Growth", class: "text-center"
-      empty_tag "canvas", id: "assets-growth", class: "chart"
+      h6 "Accounts Growth", class: "text-center"
+      empty_tag "canvas", id: "accounts-growth", class: "chart", data_controller: "cumulative-accounts-chart"
     end
   end
 
-  private def render_savings_charts_section
+  private def render_savings_chart
     div class: "col col-12" do
       h6 "Income vs Expenses", class: "text-center"
-      empty_tag "canvas", id: "income-vs-expenses", class: "chart"
+      empty_tag "canvas", id: "savings", class: "chart", data_controller: "savings-chart"
     end
   end
 

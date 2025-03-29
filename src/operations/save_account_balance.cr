@@ -3,7 +3,6 @@ class SaveAccountBalance < AccountBalance::SaveOperation
   # https://luckyframework.org/guides/database/saving-records#perma-permitting-columns
   #
   # permit_columns balance, total_expenses, total_income, current_expenses, current_income
-
   def self.apply_transaction(tx : Transaction)
     account_balances = AppDatabase.query_all(
       "SELECT * FROM account_balances WHERE account_id IN ($1, $2) FOR UPDATE",

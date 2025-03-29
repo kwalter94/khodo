@@ -15,6 +15,6 @@ class SaveAccount < Account::SaveOperation
   end
 
   after_save do |account|
-    SaveAccountBalance.create!(account_id: account.id)
+    SaveAccountBalance.create!(account_id: account.id, owner_id: owner.id)
   end
 end

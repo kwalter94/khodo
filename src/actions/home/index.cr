@@ -14,10 +14,15 @@ class Home::Index < BrowserAction
     html Home::IndexPage,
       reporting_currency: currency,
       currencies: user_currencies,
-      total_assets: total_assets,
-      new_assets: new_assets,
-      total_liabilities: total_liabilities,
-      new_liabilities: new_liabilities
+      net_worth: Home::IndexPage::NetWorth.new(
+        total_assets: total_assets,
+        new_assets: new_assets,
+        total_liabilities: total_liabilities,
+        # NOTE: Liabilities are negative (bug that turned into a feature)
+        new_liabilities: -new_liabilities,
+        value: total_assets + total_liabilities,
+        change: new_assets + new_liabilities,
+      )
   rescue error : UserProperties::ConfigurationError
     flash.info = "You need to set a default currency first!"
     Log.warn(exception: error) { "Missing user properties" }
