@@ -121,7 +121,7 @@ RUN apt-get update -q \
   && curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/gpg.key' | gpg --dearmor -o /usr/share/keyrings/caddy-stable-archive-keyring.gpg \
   && curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/debian.deb.txt' | tee /etc/apt/sources.list.d/caddy-stable.list \
   && apt-get update -q \
-  && apt-get install --no-install-recommends -y caddy \
+  && apt-get install --no-install-recommends -y caddy cron \
   && apt-get clean -y
 
 WORKDIR /khodo
@@ -130,6 +130,8 @@ COPY --from=static_assets_build /khodo/public /khodo/public
 COPY --from=server_bin /khodo/start_server /khodo/
 COPY --from=tasks_bin /khodo/tasks /khodo/
 COPY docker/Caddyfile /khodo/Caddyfile
+COPY docker/crontab /etc/cron.d/khodo
+RUN chmod 0644 /etc/cron.d/khodo && crontab /etc/cron.d/khodo
 
 RUN useradd -ms /bin/bash khodo
 USER khodo

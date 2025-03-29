@@ -41,7 +41,7 @@ class SaveAccountBalance < AccountBalance::SaveOperation
     end
   end
 
-  private def self.reset_account_balance(account_balance : AccountBalance) : Hash(String, Float64)
+  def self.reset_account_balance(account_balance : AccountBalance) : Hash(String, Float64)
     current_date = Time.local
 
     current_year_additions : Float64 = account_balance.current_year_additions
