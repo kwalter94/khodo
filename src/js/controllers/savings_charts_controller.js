@@ -10,7 +10,6 @@ export default class extends Controller {
       .fetchSavingsReport(currency_id)
       .then(report => {
         this.renderIncomeVsExpensesChart(report);
-        this.renderSavingsChart(report);
       });
   }
 
@@ -51,30 +50,11 @@ export default class extends Controller {
             borderColor: "rgb(255, 0, 0)",
             backgroundColor: "rgba(255, 0, 0, 0.5)",
           },
-        ],
-      },
-      options: {
-        responsive: true,
-        legend: { position: "bottom" },
-      },
-    });
-  }
-
-  async renderSavingsChart(report) {
-    const ctx = this.element.querySelector("#savings");
-    report = report.filter(({period}) => period <= 12);
-
-    new Chart(ctx, {
-      type: "line",
-      data: {
-        labels: report.map(({month}) => month),
-        datasets: [
           {
             label: "Savings",
             data: report.map(({savings}) => savings),
             borderColor: "rgb(0, 128, 0)",
             backgroundColor: "rgba(0, 128, 0, 0.5)",
-            stepped: true,
             fill: true,
           },
         ],
@@ -82,10 +62,6 @@ export default class extends Controller {
       options: {
         responsive: true,
         legend: { position: "bottom" },
-        interaction: {
-          intersect: false,
-          axis: "x",
-        },
       },
     });
   }

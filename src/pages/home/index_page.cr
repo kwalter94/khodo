@@ -59,14 +59,9 @@ class Home::IndexPage < MainLayout
   end
 
   private def render_savings_charts_section
-    div class: "col col-lg-6 col-12" do
+    div class: "col col-12" do
       h6 "Income vs Expenses", class: "text-center"
       empty_tag "canvas", id: "income-vs-expenses", class: "chart"
-    end
-
-    div class: "col col-lg-6 col-12" do
-      h6 "Savings", class: "text-center"
-      empty_tag "canvas", id: "savings", class: "chart"
     end
   end
 
