@@ -9,6 +9,7 @@ class Account < BaseModel
 
     has_many to_transactions : Transaction, foreign_key: :to_account_id     # ameba:disable Lint/UselessAssign
     has_many from_transactions : Transaction, foreign_key: :from_account_id # ameba:disable Lint/UselessAssign
+    has_one balance : AccountBalance                                        # ameba:disable Lint/UselessAssign
   end
 
   def display_name : String

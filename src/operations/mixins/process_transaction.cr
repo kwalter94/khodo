@@ -9,17 +9,25 @@ module ProcessTransaction
       owner_id.value = owner.id
     end
 
-    after_save do |transaction|
+    after_save update_tags
+    after_save update_account_balances
+
+    def update_tags(tx : Transaction)
       TransactionTagQuery
         .new
-        .transaction_id(transaction.id)
+        .transaction_id(tx.id)
         .delete!
 
       tags.value.try do |tag_ids|
         TagQuery.new.id.in(tag_ids).each do |tag|
-          SaveTransactionTag.create!(owner: owner, transaction: transaction, tag: tag)
+          SaveTransactionTag.create!(owner: owner, transaction: tx, tag: tag)
         end
       end
+    end
+
+    def update_account_balances(tx : Transaction)
+      # TODO: Move this to a background job
+      SaveAccountBalance.apply_transaction(tx)
     end
   end
 

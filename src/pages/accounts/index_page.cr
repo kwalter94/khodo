@@ -1,8 +1,9 @@
 class Accounts::IndexPage < MainLayout
-  needs accounts : Enumerable(CumulativeAccountBalanceReport) # ameba:disable Lint/UselessAssign
-  needs currencies : Enumerable(Currency)                     # ameba:disable Lint/UselessAssign
-  needs reporting_currency : Currency                         # ameba:disable Lint/UselessAssign
-  needs ledger : Ledger                                       # ameba:disable Lint/UselessAssign
+  needs accounts : Enumerable(Account)         # ameba:disable Lint/UselessAssign
+  needs currencies : Enumerable(Currency)      # ameba:disable Lint/UselessAssign
+  needs reporting_currency : Currency          # ameba:disable Lint/UselessAssign
+  needs exchange_rates : Hash(Int64, Float64?) # ameba:disable Lint/UselessAssign
+  needs ledger : Ledger                        # ameba:disable Lint/UselessAssign
 
   quick_def page_title, "#{ledger.name} Accounts"
 
@@ -33,16 +34,26 @@ class Accounts::IndexPage < MainLayout
             th { text "Account" }
             th { text "Type" }
             th { text "Net Additions (this month)" }
+            th { text "Net Additions (this year)" }
             th { text "Balance" }
           end
 
           tbody do
-            accounts.each do |row|
+            accounts.each do |account|
               tr do
-                td { link row.account_name, Accounts::Show.with(row.account_id) }
-                td { text row.account_type_name }
-                td class: "monetary-value" { text format_money(row.net_receipts, reporting_currency) }
-                td class: "monetary-value" { text format_money(row.balance, reporting_currency) }
+                rate = exchange_rates.[account.currency_id]?
+
+                td { link account.name, Accounts::Show.with(account.id) }
+                td { text account.type.name }
+                td class: "monetary-value" do
+                  text rate.nil? ? "???" : format_money(account.balance.current_month_net_additions * rate, reporting_currency)
+                end
+                td class: "monetary-value" do
+                  text rate.nil? ? "???" : format_money(account.balance.current_year_net_additions * rate, reporting_currency)
+                end
+                td class: "monetary-value" do
+                  text rate.nil? ? "???" : format_money(account.balance.balance * rate, reporting_currency)
+                end
               end
             end
           end

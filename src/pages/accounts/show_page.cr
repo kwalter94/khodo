@@ -1,9 +1,8 @@
 class Accounts::ShowPage < MainLayout
-  needs account : Account                        # ameba:disable Lint/UselessAssign
-  needs balance : CumulativeAccountBalanceReport # ameba:disable Lint/UselessAssign
-  needs transactions : TransactionQuery          # ameba:disable Lint/UselessAssign
-  needs pages : Lucky::Paginator                 # ameba:disable Lint/UselessAssign
-  needs search_description : String?             # ameba:disable Lint/UselessAssign
+  needs account : Account               # ameba:disable Lint/UselessAssign
+  needs transactions : TransactionQuery # ameba:disable Lint/UselessAssign
+  needs pages : Lucky::Paginator        # ameba:disable Lint/UselessAssign
+  needs search_description : String?    # ameba:disable Lint/UselessAssign
 
   def content
     mount Shared::BreadCrumb,
@@ -47,21 +46,37 @@ class Accounts::ShowPage < MainLayout
   end
 
   private def render_account_fields
-    div class: "col col-lg-6 col-md-12" do
+    div class: "col col-xl-4 col-md-12" do
       table class: "table" do
         tbody do
           account_property "Currency:", "#{account.currency.name} (#{account.currency.symbol})"
           account_property "Account type:", account.type.name
+          account_property "Ledger:", account.ledger.try(&.name) || "N/A"
         end
       end
     end
-    div class: "col col-lg-6 col-md-12" do
+    div class: "col col-xl-8 col-md-12" do
       table class: "table" do
         tbody do
-          account_property "Current Balance:", format_money(balance.balance, account.currency)
-          account_property "Additions (this month):", format_money(balance.receipts, account.currency)
-          account_property "Deductions (this month):", format_money(balance.deductions, account.currency)
-          account_property "Net Additions (this month):", format_money(balance.net_receipts, account.currency)
+          account_property "Current Balance:", format_money(account.balance.balance, account.currency)
+          account_property(
+            "Additions (month | year | lifetime):",
+            format_money(account.balance.current_month_additions, account.currency),
+            format_money(account.balance.current_year_additions, account.currency),
+            format_money(account.balance.lifetime_additions, account.currency),
+          )
+          account_property(
+            "Deductions (month | year | lifetime):",
+            format_money(account.balance.current_month_deductions, account.currency),
+            format_money(account.balance.current_year_deductions, account.currency),
+            format_money(account.balance.lifetime_deductions, account.currency),
+          )
+          account_property(
+            "Net Additions (month | year | lifetime):",
+            format_money(account.balance.current_month_net_additions, account.currency),
+            format_money(account.balance.current_year_net_additions, account.currency),
+            format_money(account.balance.lifetime_net_additions, account.currency),
+          )
         end
       end
     end
@@ -141,10 +156,12 @@ class Accounts::ShowPage < MainLayout
     end
   end
 
-  private def account_property(property_name : String, value : String)
+  private def account_property(property_name : String, *values : String)
     tr do
       th scope: "row" { text property_name }
-      td style: "text-align: right" { text value }
+      values.each do |value|
+        td style: "text-align: right" { text value }
+      end
     end
   end
 

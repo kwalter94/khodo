@@ -5,24 +5,35 @@ class Accounts::Index < BrowserAction
   get "/accounts" do
     reporting_currency = currency_id.try { |id| CurrencyQuery.new.owner_id(current_user.id).id(id).first? }
     reporting_currency ||= CurrencyQuery.find_user_default_currency(current_user.id)
-    report = CumulativeAccountBalanceReportQuery
+
+    accounts = AccountQuery
       .new
       .owner_id(current_user.id)
-      .currency_id(reporting_currency.id)
       .ledger_id(ledger_id || current_user_general_ledger.id)
-      .period(1)
-      .account_type_name.not.in(["Income", "Expense"])
-      .account_type_name.asc_order
-      .account_name.asc_order
-      .currency_name.asc_order
-    currencies = CurrencyQuery.new.owner_id(current_user.id).name.asc_order
+      .where_type(AccountTypeQuery.new.name.not.in(["Income", "Expense"]))
+      .preload_balance
+      .preload_type
+      .name.asc_order
+
+    currencies = CurrencyQuery
+      .new
+      .owner_id(current_user.id)
+      .name.asc_order
+
+    exchange_rates = ExchangeRateMatrixQuery
+      .new
+      .owner_id(current_user.id)
+      .to_currency_id(reporting_currency.id)
+      .each_with_object({} of Int64 => Float64?) { |exchange_rate, hash| hash[exchange_rate.from_currency_id] = exchange_rate.rate }
+
     ledger = LedgerQuery.new.find(ledger_id)
 
     html IndexPage,
-      accounts: report,
+      accounts: accounts,
       reporting_currency: reporting_currency,
       currencies: currencies,
-      ledger: ledger
+      ledger: ledger,
+      exchange_rates: exchange_rates
   rescue error : UserProperties::ConfigurationError
     Log.warn(exception: error) { "Missing user properties!" }
     flash.info = error.to_s

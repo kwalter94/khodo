@@ -8,15 +8,8 @@ class Accounts::Show < BrowserAction
       .preload_type
       .preload_currency
       .preload_ledger
+      .preload_balance
       .find(account_id)
-
-    account_balance = CumulativeAccountBalanceReportQuery
-      .new
-      .owner_id(current_user.id)
-      .account_id(account.id)
-      .currency_id(account.currency_id)
-      .period(1)
-      .first
 
     transactions = find_transactions(account)
     pages, transactions = paginate(transactions, per_page: 10)
@@ -24,7 +17,6 @@ class Accounts::Show < BrowserAction
     html ShowPage,
       account: account,
       pages: pages,
-      balance: account_balance,
       search_description: search_description,
       transactions: transactions
   end
