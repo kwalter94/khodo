@@ -1,5 +1,5 @@
 class Tags::Index < BrowserAction
-  param currency_id : Int64? = nil
+  param currency_id : Int64? = nil # ameba:disable Lint/UselessAssign
 
   get "/tags" do
     currency = currency_id.try { |id| CurrencyQuery.new.owner_id(current_user.id).id(id).first? }

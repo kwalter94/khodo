@@ -1,7 +1,11 @@
 class Tags::ShowPage < MainLayout
-  needs tag : Tag                         # ameba:disable Lint/UselessAssign
-  needs currencies : Enumerable(Currency) # ameba:disable Lint/UselessAssign
-  needs reporting_currency : Currency     # ameba:disable Lint/UselessAssign
+  needs tag : Tag                                       # ameba:disable Lint/UselessAssign
+  needs currencies : Enumerable(Currency)               # ameba:disable Lint/UselessAssign
+  needs reporting_currency : Currency                   # ameba:disable Lint/UselessAssign
+  needs exchange_rates : ExchangeRateMatrixQuery::Table # ameba:disable Lint/UselessAssign
+  needs transactions : Enumerable(Transaction)          # ameba:disable Lint/UselessAssign
+  needs pages : Lucky::Paginator                        # ameba:disable Lint/UselessAssign
+
   quick_def page_title, "Tag: #{tag.name}"
 
   def content
@@ -27,6 +31,15 @@ class Tags::ShowPage < MainLayout
         empty_tag "canvas",
           data_controller: "monthly-transactions-by-tag-chart"
       end
+    end
+
+    div class: "row" do
+      mount Shared::TransactionsTable,
+        currency: reporting_currency,
+        transactions: transactions,
+        exchange_rates: exchange_rates
+
+      mount Lucky::Paginator::BootstrapNav, pages
     end
   end
 
