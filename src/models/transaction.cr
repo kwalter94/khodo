@@ -1,4 +1,14 @@
 class Transaction < BaseModel
+  module TransactionLike
+    abstract def from_account_id : Int64
+    abstract def from_amount : Float64
+    abstract def to_account_id : Int64
+    abstract def to_amount : Float64
+    abstract def transaction_date : Time
+  end
+
+  include TransactionLike
+
   table do
     column external_id : String?   # ameba:disable Lint/UselessAssign
     column description : String    # ameba:disable Lint/UselessAssign

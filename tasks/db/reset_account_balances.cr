@@ -6,7 +6,7 @@ class ResetAccountBalances < LuckyTask::Task
   def call
     AccountBalanceQuery.new.each do |account_balance|
       Log.info { "Resetting account balance: #{account_balance.account_id}" }
-      patch = SaveAccountBalance.reset_account_balance(account_balance)
+      patch = SaveAccountBalance.create_account_balance_update_patch(account_balance)
 
       SaveAccountBalance.update!(
         account_balance,

@@ -1,4 +1,23 @@
 module ProcessTransaction
+  struct TempTransaction
+    include Transaction::TransactionLike
+
+    property from_account_id : Int64
+    property to_account_id : Int64
+    property from_amount : Float64
+    property to_amount : Float64
+    property transaction_date : Time
+
+    def initialize(
+      @from_account_id,
+      @to_account_id,
+      @from_amount,
+      @to_amount,
+      @transaction_date
+    )
+    end
+  end
+
   macro included
     needs owner : User
 
@@ -26,8 +45,15 @@ module ProcessTransaction
     end
 
     def update_account_balances(tx : Transaction)
-      # TODO: Move this to a background job
-      SaveAccountBalance.apply_transaction(tx)
+      adjusted_tx = TempTransaction.new(
+        from_account_id: from_account_id.value.not_nil!,
+        to_account_id: to_account_id.value.not_nil!,
+        from_amount: from_amount.value.not_nil! - (from_amount.original_value || 0),
+        to_amount: from_amount.value.not_nil! - (to_amount.original_value || 0),
+        transaction_date: transaction_date.value.not_nil!,
+      )
+
+      SaveAccountBalance.apply_transaction(adjusted_tx)
     end
   end
 

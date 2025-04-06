@@ -1,36 +1,39 @@
 class SaveAccountBalance < AccountBalance::SaveOperation
-  # To save user provided params to the database, you must permit them
-  # https://luckyframework.org/guides/database/saving-records#perma-permitting-columns
-  #
-  # permit_columns balance, total_expenses, total_income, current_expenses, current_income
-  def self.apply_transaction(tx : Transaction)
+  def self.apply_transaction(tx : Transaction::TransactionLike)
+    account_balances_query = <<-SQL
+      SELECT
+        *
+      FROM account_balances
+      WHERE
+        account_id IN ($1, $2)
+      FOR UPDATE
+    SQL
     account_balances = AppDatabase.query_all(
-      "SELECT * FROM account_balances WHERE account_id IN ($1, $2) FOR UPDATE",
+      account_balances_query,
       args: [tx.from_account_id, tx.to_account_id],
       as: AccountBalance,
     )
 
-    # TODO: Wrap this in a database transaction when Avram supports it!
+    # NOTE: This should be probably be wrapped in a database transaction but we are running
+    # single threaded at the end of the day, praise gad!
     account_balances.each do |account_balance|
-      patch = reset_account_balance(account_balance)
+      patch = create_account_balance_update_patch(account_balance)
+      is_current_year_tx = tx.transaction_date.year >= account_balance.updated_at.year
+      is_current_month_tx = tx.transaction_date.to_s("%Y-%m") >= account_balance.updated_at.to_s("%Y-%m")
 
       if account_balance.account_id == tx.from_account_id
-        patch["balance"] -= tx.from_amount
         patch["lifetime_deductions"] += tx.from_amount
-        patch["current_month_deductions"] += tx.from_amount
-        patch["current_year_deductions"] += tx.from_amount
+        patch["current_month_deductions"] += tx.from_amount if is_current_month_tx
+        patch["current_year_deductions"] += tx.from_amount if is_current_year_tx
       elsif account_balance.account_id == tx.to_account_id
-        patch["balance"] += tx.to_amount
         patch["lifetime_additions"] += tx.to_amount
-        patch["current_month_additions"] += tx.to_amount
-        patch["current_year_additions"] += tx.to_amount
-      else
-        raise "Attempted to update an account balance that doesn't belong to the tx: #{tx.id}"
+        patch["current_month_additions"] += tx.to_amount if is_current_month_tx
+        patch["current_year_additions"] += tx.to_amount if is_current_year_tx
       end
 
       SaveAccountBalance.update!(
         account_balance,
-        balance: patch["balance"],
+        balance: patch["lifetime_additions"] - patch["lifetime_deductions"],
         lifetime_deductions: patch["lifetime_deductions"],
         lifetime_additions: patch["lifetime_additions"],
         current_month_additions: patch["current_month_additions"],
@@ -41,7 +44,7 @@ class SaveAccountBalance < AccountBalance::SaveOperation
     end
   end
 
-  def self.reverse_transaction(tx : Transaction)
+  def self.reverse_transaction(tx : Transaction::TransactionLike)
     query = <<-SQL
       SELECT
         *
@@ -53,44 +56,39 @@ class SaveAccountBalance < AccountBalance::SaveOperation
     SQL
     account_balances = AppDatabase.query_all(
       query,
-      args: [tx.from_account_id, tx.to_account_id, tx.updated_at],
+      args: [tx.from_account_id, tx.to_account_id, tx.transaction_date],
       as: AccountBalance,
     )
 
     account_balances.each do |account_balance|
+      patch = create_account_balance_update_patch(account_balance)
+      is_current_year_tx = tx.transaction_date.year >= account_balance.updated_at.year
+      is_current_month_tx = tx.transaction_date.to_s("%Y-%m") >= account_balance.updated_at.to_s("%Y-%m")
+
       if account_balance.account_id == tx.from_account_id
-        month_update = account_balance.updated_at.month == tx.updated_at.month ? tx.from_amount : 0
-
-        update = {
-          balance:                  account_balance.balance + tx.from_amount,
-          lifetime_additions:       account_balance.lifetime_additions,
-          lifetime_deductions:      account_balance.lifetime_deductions - tx.from_amount,
-          current_month_additions:  account_balance.current_month_additions,
-          current_month_deductions: account_balance.current_month_deductions - month_update,
-          current_year_additions:   account_balance.current_year_additions,
-          current_year_deductions:  account_balance.current_year_deductions - tx.from_amount,
-        }
+        patch["lifetime_deductions"] -= tx.from_amount
+        patch["current_month_deductions"] -= tx.from_amount if is_current_month_tx
+        patch["current_year_deductions"] -= tx.from_amount if is_current_year_tx
       elsif account_balance.account_id == tx.to_account_id
-        month_update = account_balance.updated_at.month == tx.updated_at.month ? tx.to_amount : 0
-
-        update = {
-          balance:                  account_balance.balance - tx.to_amount,
-          lifetime_additions:       account_balance.lifetime_additions - tx.to_amount,
-          lifetime_deductions:      account_balance.lifetime_deductions,
-          current_month_additions:  account_balance.current_month_additions - month_update,
-          current_month_deductions: account_balance.current_month_deductions,
-          current_year_additions:   account_balance.current_year_additions - tx.to_amount,
-          current_year_deductions:  account_balance.current_year_deductions,
-        }
-      else
-        raise "Attempted to update an account balance that doesn't belong to the tx: #{tx.id}"
+        patch["lifetime_additions"] -= tx.to_amount
+        patch["current_month_additions"] -= tx.to_amount if is_current_month_tx
+        patch["current_year_additions"] -= tx.to_amount if is_current_year_tx
       end
 
-      SaveAccountBalance.update!(account_balance, **update)
+      SaveAccountBalance.update!(
+        account_balance,
+        balance: patch["lifetime_additions"] - patch["lifetime_deductions"],
+        lifetime_deductions: patch["lifetime_deductions"],
+        lifetime_additions: patch["lifetime_additions"],
+        current_month_additions: patch["current_month_additions"],
+        current_month_deductions: patch["current_month_deductions"],
+        current_year_additions: patch["current_year_additions"],
+        current_year_deductions: patch["current_year_deductions"],
+      )
     end
   end
 
-  def self.reset_account_balance(account_balance : AccountBalance) : Hash(String, Float64)
+  def self.create_account_balance_update_patch(account_balance : AccountBalance) : Hash(String, Float64)
     current_date = Time.local
 
     current_year_additions : Float64 = account_balance.current_year_additions
@@ -109,7 +107,6 @@ class SaveAccountBalance < AccountBalance::SaveOperation
     end
 
     {
-      "balance"                  => account_balance.balance,
       "lifetime_deductions"      => account_balance.lifetime_deductions,
       "lifetime_additions"       => account_balance.lifetime_additions,
       "current_month_additions"  => current_month_additions,
