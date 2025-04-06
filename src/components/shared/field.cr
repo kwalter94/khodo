@@ -34,19 +34,29 @@ class Shared::Field(T) < BaseComponent
 
   needs attribute : Avram::PermittedAttribute(T) # ameba:disable Lint/UselessAssign
   needs label_text : String?                     # ameba:disable Lint/UselessAssign
+  needs inline : Bool = false                    # ameba:disable Lint/UselessAssign
 
   def render(&)
-    div class: "mb-3 row" do
+    if inline?
       label_for attribute, label_text, class: "col-md-2 col-form-label"
-
-      # You can add more default options here. For example:
-      #
-      #    tag_defaults field: attribute, class: "input"
-      #
-      # Will add the class "input" to the generated HTML.
-      div class: "col-md-10" do
+      div class: "col-md-4" do
         tag_defaults field: attribute, class: "form-control" do |tag_builder|
           yield tag_builder
+        end
+      end
+    else
+      div class: "mb-3 row" do
+        label_for attribute, label_text, class: "col-md-2 col-form-label"
+
+        # You can add more default options here. For example:
+        #
+        #    tag_defaults field: attribute, class: "input"
+        #
+        # Will add the class "input" to the generated HTML.
+        div class: "col-md-10" do
+          tag_defaults field: attribute, class: "form-control" do |tag_builder|
+            yield tag_builder
+          end
         end
       end
     end

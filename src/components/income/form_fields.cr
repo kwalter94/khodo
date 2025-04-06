@@ -6,12 +6,14 @@ class Income::FormFields < BaseComponent
       html.text_input(autofocus: "true", attrs: [:required])
     end
 
-    mount Shared::Field, operation.transaction_date, &.date_input(attrs: [:required])
+    mount Shared::Field, operation.transaction_date, label_text: "Date", &.date_input(attrs: [:required])
 
-    mount Shared::DummyField, label_text: "To account", input_value: operation.account.name
+    div class: "row" do
+      mount Shared::DummyField, label_text: "To", input_value: operation.account.name, inline: true
 
-    mount Shared::Field, operation.amount, label_text: "Amount (#{operation.account.currency.symbol})" do |input|
-      input.number_input(min: "0.01", step: "0.01")
+      mount Shared::Field, operation.amount, label_text: "Amount (#{operation.account.currency.symbol})", inline: true do |input|
+        input.number_input(min: "0.01", step: "0.01")
+      end
     end
 
     mount Shared::Field, operation.tags do |html|
