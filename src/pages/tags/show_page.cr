@@ -5,6 +5,7 @@ class Tags::ShowPage < MainLayout
   needs exchange_rates : ExchangeRateMatrixQuery::Table # ameba:disable Lint/UselessAssign
   needs transactions : Enumerable(Transaction)          # ameba:disable Lint/UselessAssign
   needs pages : Lucky::Paginator                        # ameba:disable Lint/UselessAssign
+  needs search_tx : String                              # ameba:disable Lint/UselessAssign
 
   quick_def page_title, "Tag: #{tag.name}"
 
@@ -27,13 +28,12 @@ class Tags::ShowPage < MainLayout
 
     div class: "row" do
       div class: "col col-12" { render_currency_selector }
-      div class: "col col-12" do
-        empty_tag "canvas",
-          data_controller: "monthly-transactions-by-tag-chart"
-      end
+      div class: "col col-12" { empty_tag "canvas", data_controller: "monthly-transactions-by-tag-chart" }
     end
 
     div class: "row" do
+      render_transactions_search_filter
+
       mount Shared::TransactionsTable,
         currency: reporting_currency,
         transactions: transactions,
@@ -77,6 +77,26 @@ class Tags::ShowPage < MainLayout
             option(value: currency.id, attrs: attrs) { text "#{currency.name} (#{currency.symbol})" }
           end
         end
+      end
+    end
+  end
+
+  private def render_transactions_search_filter
+    form(
+      id: "search_tx_form",
+      action: Tags::Show.path(tag.id, currency_id: reporting_currency.id),
+      class: "form col col-12",
+    ) do
+      div class: "input-group mb-3" do
+        span class: "input-group-text" { text "Search" }
+        input(
+          id: "search_tx_input",
+          type: "text",
+          class: "form-control form-control-lg",
+          placeholder: "Search description...",
+          name: "search_tx",
+          value: search_tx || "",
+        )
       end
     end
   end
