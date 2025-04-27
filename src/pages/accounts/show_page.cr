@@ -1,5 +1,6 @@
 class Accounts::ShowPage < MainLayout
   needs account_balance : Reports::AccountBalance # ameba:disable Lint/UselessAssign
+  needs currency : Currency                       # ameba:disable Lint/UselessAssign
   needs transactions : TransactionQuery           # ameba:disable Lint/UselessAssign
   needs pages : Lucky::Paginator                  # ameba:disable Lint/UselessAssign
   needs search_description : String?              # ameba:disable Lint/UselessAssign
@@ -55,7 +56,7 @@ class Accounts::ShowPage < MainLayout
     div class: "col col-xl-4 col-md-12" do
       table class: "table" do
         tbody do
-          account_property "Currency:", "#{account_balance.currency_name} (#{account_balance.currency_symbol})"
+          account_property "Currency:", "#{currency.name} (#{currency.symbol})"
           account_property "Account type:", account_balance.account_type_name
           account_property "Ledger:", account_balance.ledger_name || "N/A"
         end
@@ -64,24 +65,24 @@ class Accounts::ShowPage < MainLayout
     div class: "col col-xl-8 col-md-12" do
       table class: "table" do
         tbody do
-          account_property "Current Balance:", format_money(account_balance.balance, account_balance.currency)
+          account_property "Current Balance:", format_money(account_balance.balance, currency)
           account_property(
             "Additions (month | year | lifetime):",
-            format_money(account_balance.current_month_additions, account_balance.currency),
-            format_money(account_balance.current_year_additions, account_balance.currency),
-            format_money(account_balance.lifetime_additions, account_balance.currency),
+            format_money(account_balance.current_month_additions, currency),
+            format_money(account_balance.current_year_additions, currency),
+            format_money(account_balance.lifetime_additions, currency),
           )
           account_property(
             "Deductions (month | year | lifetime):",
-            format_money(account_balance.current_month_deductions, account_balance.currency),
-            format_money(account_balance.current_year_deductions, account_balance.currency),
-            format_money(account_balance.lifetime_deductions, account_balance.currency),
+            format_money(account_balance.current_month_deductions, currency),
+            format_money(account_balance.current_year_deductions, currency),
+            format_money(account_balance.lifetime_deductions, currency),
           )
           account_property(
             "Net Additions (month | year | lifetime):",
-            format_money(account_balance.current_month_net_additions, account_balance.currency),
-            format_money(account_balance.current_year_net_additions, account_balance.currency),
-            format_money(account_balance.balance, account_balance.currency),
+            format_money(account_balance.current_month_net_additions, currency),
+            format_money(account_balance.current_year_net_additions, currency),
+            format_money(account_balance.balance, currency),
           )
         end
       end

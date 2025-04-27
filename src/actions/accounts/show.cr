@@ -6,12 +6,14 @@ class Accounts::Show < BrowserAction
       .new
       .owner_id(current_user.id)
       .find(account_id.to_i64)
+    currency = CurrencyQuery.new.find(balance.currency_id)
 
     transactions = find_transactions(balance)
     pages, transactions = paginate(transactions, per_page: 10)
 
     html ShowPage,
       account_balance: balance,
+      currency: currency,
       pages: pages,
       search_description: search_description,
       transactions: transactions

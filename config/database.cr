@@ -11,7 +11,7 @@ AppDatabase.configure do |settings|
       # Some common usernames are "postgres", "root", or your system username (run 'whoami')
       username: ENV["DB_USERNAME"]? || "postgres",
       # Some Postgres installations require no password. Use "" if that is the case.
-      password: ENV["DB_PASSWORD"]? || "postgres"
+      password: ENV["DB_PASSWORD"]? || "postgres",
     )
   end
 end
@@ -28,7 +28,7 @@ ReportingDatabase.configure do |settings|
       # have configuration `ALTER USER my_analytics_user SET duckdb.force_execution TO true`
       # if using pg_duckdb (this is recommended)
       username: ENV["DB_REPORTING_USERNAME"]? || "postgres",
-      password: ENV["DB_REPORTING_PASSWORD"]? || "postgres"
+      password: ENV["DB_REPORTING_PASSWORD"]? || "postgres",
     )
   end
 end
