@@ -1,5 +1,5 @@
 class Accounts::IndexPage < MainLayout
-  needs accounts : Enumerable(Account)         # ameba:disable Lint/UselessAssign
+  needs report : Reports::AccountBalanceQuery  # ameba:disable Lint/UselessAssign
   needs currencies : Enumerable(Currency)      # ameba:disable Lint/UselessAssign
   needs reporting_currency : Currency          # ameba:disable Lint/UselessAssign
   needs exchange_rates : Hash(Int64, Float64?) # ameba:disable Lint/UselessAssign
@@ -39,20 +39,20 @@ class Accounts::IndexPage < MainLayout
           end
 
           tbody do
-            accounts.each do |account|
+            report.each do |balance|
               tr do
-                rate = exchange_rates.[account.currency_id]?
+                rate = exchange_rates.[balance.currency_id]?
 
-                td { link account.name, Accounts::Show.with(account.id) }
-                td { text account.type.name }
+                td { link balance.account_name, Accounts::Show.with(balance.account_id) }
+                td { text balance.account_type_name }
                 td class: "monetary-value" do
-                  text rate.nil? ? "???" : format_money(account.balance.current_month_net_additions * rate, reporting_currency)
+                  text rate.nil? ? "???" : format_money(balance.current_month_net_additions.to_f64 * rate, reporting_currency)
                 end
                 td class: "monetary-value" do
-                  text rate.nil? ? "???" : format_money(account.balance.current_year_net_additions * rate, reporting_currency)
+                  text rate.nil? ? "???" : format_money(balance.current_year_net_additions.to_f64 * rate, reporting_currency)
                 end
                 td class: "monetary-value" do
-                  text rate.nil? ? "???" : format_money(account.balance.balance * rate, reporting_currency)
+                  text rate.nil? ? "???" : format_money(balance.balance.to_f64 * rate, reporting_currency)
                 end
               end
             end

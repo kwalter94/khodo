@@ -38,18 +38,8 @@ services:
       - postgres
     restart: on-failure
 
-  cron:
-    image: "kwalter94/khodo:${TAG:-latest}"
-    command: cron -f
-    user: root
-    environment:
-      <<: *lucky-env
-    depends_on:
-      - backend
-    restart: on-failure
-
   postgres:
-    image: postgres:16-alpine
+    image: pgduckdb/pgduckdb:16-main
     environment:
       POSTGRES_USER: ${DATABASE_USER:-khodo}
       POSTGRES_PASSWORD: ${DATABASE_PASSWORD:-password}
@@ -57,3 +47,5 @@ services:
     ports:
       - 6543:5432
     restart: on-failure
+    # Run as root
+    user: root

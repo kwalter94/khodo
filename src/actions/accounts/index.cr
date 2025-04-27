@@ -6,14 +6,10 @@ class Accounts::Index < BrowserAction
     reporting_currency = currency_id.try { |id| CurrencyQuery.new.owner_id(current_user.id).id(id).first? }
     reporting_currency ||= CurrencyQuery.find_user_default_currency(current_user.id)
 
-    accounts = AccountQuery
+    report = Reports::AccountBalanceQuery
       .new
       .owner_id(current_user.id)
       .ledger_id(ledger_id || current_user_general_ledger.id)
-      .where_type(AccountTypeQuery.new.name.not.in(["Income", "Expense"]))
-      .preload_balance
-      .preload_type
-      .name.asc_order
 
     currencies = CurrencyQuery
       .new
@@ -29,7 +25,7 @@ class Accounts::Index < BrowserAction
     ledger = LedgerQuery.new.find(ledger_id)
 
     html IndexPage,
-      accounts: accounts,
+      report: report,
       reporting_currency: reporting_currency,
       currencies: currencies,
       ledger: ledger,

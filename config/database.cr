@@ -16,6 +16,23 @@ AppDatabase.configure do |settings|
   end
 end
 
+ReportingDatabase.configure do |settings|
+  if LuckyEnv.production?
+    settings.credentials = Avram::Credentials.parse(ENV["REPORTING_DATABASE_URL"])
+  else
+    settings.credentials = Avram::Credentials.parse?(ENV["REPORTING_DATABASE_URL"]?) || Avram::Credentials.new(
+      database: database_name,
+      hostname: ENV["DB_HOST"]? || "localhost",
+      port: ENV["DB_PORT"]?.try(&.to_i) || 5432,
+      # This user needs read only access to the reporting schema and must
+      # have configuration `ALTER USER my_analytics_user SET duckdb.force_execution TO true`
+      # if using pg_duckdb (this is recommended)
+      username: ENV["DB_REPORTING_USERNAME"]? || "postgres",
+      password: ENV["DB_REPORTING_PASSWORD"]? || "postgres"
+    )
+  end
+end
+
 Avram.configure do |settings|
   settings.database_to_migrate = AppDatabase
 

@@ -13,8 +13,4 @@ class SaveAccount < Account::SaveOperation
     validate_required type_id
     validate_required currency_id
   end
-
-  after_save do |account|
-    SaveAccountBalance.create!(account_id: account.id, owner_id: owner.id)
-  end
 end

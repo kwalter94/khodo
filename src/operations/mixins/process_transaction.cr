@@ -13,7 +13,7 @@ module ProcessTransaction
       @to_account_id,
       @from_amount,
       @to_amount,
-      @transaction_date
+      @transaction_date,
     )
     end
   end
@@ -29,7 +29,6 @@ module ProcessTransaction
     end
 
     after_save update_tags
-    after_save update_account_balances
 
     def update_tags(tx : Transaction)
       TransactionTagQuery
@@ -42,18 +41,6 @@ module ProcessTransaction
           SaveTransactionTag.create!(owner: owner, transaction: tx, tag: tag)
         end
       end
-    end
-
-    def update_account_balances(tx : Transaction)
-      adjusted_tx = TempTransaction.new(
-        from_account_id: from_account_id.value.not_nil!,
-        to_account_id: to_account_id.value.not_nil!,
-        from_amount: from_amount.value.not_nil! - (from_amount.original_value || 0),
-        to_amount: from_amount.value.not_nil! - (to_amount.original_value || 0),
-        transaction_date: transaction_date.value.not_nil!,
-      )
-
-      SaveAccountBalance.apply_transaction(adjusted_tx)
     end
   end
 

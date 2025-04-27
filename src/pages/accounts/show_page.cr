@@ -1,14 +1,20 @@
 class Accounts::ShowPage < MainLayout
-  needs account : Account               # ameba:disable Lint/UselessAssign
-  needs transactions : TransactionQuery # ameba:disable Lint/UselessAssign
-  needs pages : Lucky::Paginator        # ameba:disable Lint/UselessAssign
-  needs search_description : String?    # ameba:disable Lint/UselessAssign
+  needs account_balance : Reports::AccountBalance # ameba:disable Lint/UselessAssign
+  needs transactions : TransactionQuery           # ameba:disable Lint/UselessAssign
+  needs pages : Lucky::Paginator                  # ameba:disable Lint/UselessAssign
+  needs search_description : String?              # ameba:disable Lint/UselessAssign
 
   def content
     mount Shared::BreadCrumb,
       path: [
-        {"#{account.ledger.try(&.name)} Accounts", Accounts::Index.route(ledger_id: account.ledger_id)},
-        {truncate_text(account.name, length: 20), Accounts::Show.with(account.id)},
+        {
+          "#{account_balance.ledger_name} Accounts",
+          Accounts::Index.route(ledger_id: account_balance.ledger_id),
+        },
+        {
+          truncate_text(account_balance.account_name, length: 20),
+          Accounts::Show.with(account_balance.account_id),
+        },
       ]
 
     div class: "row" { render_actions }
@@ -19,7 +25,7 @@ class Accounts::ShowPage < MainLayout
   end
 
   private def render_actions
-    div class: "col col-12 col-md-8" { h1 account.name }
+    div class: "col col-12 col-md-8" { h1 account_balance.account_name }
 
     div class: "col col-12 offset-md-2 col-md-2" do
       section do
@@ -33,12 +39,12 @@ class Accounts::ShowPage < MainLayout
           ) { text "Actions" }
 
           ul class: "dropdown-menu", aria_labelledby: "actions" do
-            li { link "Add Expense", Expenses::New.with(account_id: account.id), class: "dropdown-item" }
-            li { link "Add Income", Income::New.with(account_id: account.id), class: "dropdown-item" }
-            li { link "Add Transfer", Transfers::New.with(account_id: account.id), class: "dropdown-item" }
+            li { link "Add Expense", Expenses::New.with(account_id: account_balance.account_id), class: "dropdown-item" }
+            li { link "Add Income", Income::New.with(account_id: account_balance.account_id), class: "dropdown-item" }
+            li { link "Add Transfer", Transfers::New.with(account_id: account_balance.account_id), class: "dropdown-item" }
             li { hr class: "dropdown-divider" }
-            li { link "Edit Account", Accounts::Edit.with(account.id), class: "dropdown-item" }
-            li { link "Delete Account", Accounts::Delete.with(account.id), data_confirm: "Are you sure?", class: "dropdown-item" }
+            li { link "Edit Account", Accounts::Edit.with(account_balance.account_id), class: "dropdown-item" }
+            li { link "Delete Account", Accounts::Delete.with(account_balance.account_id), data_confirm: "Are you sure?", class: "dropdown-item" }
           end
         end
       end
@@ -49,33 +55,33 @@ class Accounts::ShowPage < MainLayout
     div class: "col col-xl-4 col-md-12" do
       table class: "table" do
         tbody do
-          account_property "Currency:", "#{account.currency.name} (#{account.currency.symbol})"
-          account_property "Account type:", account.type.name
-          account_property "Ledger:", account.ledger.try(&.name) || "N/A"
+          account_property "Currency:", "#{account_balance.currency_name} (#{account_balance.currency_symbol})"
+          account_property "Account type:", account_balance.account_type_name
+          account_property "Ledger:", account_balance.ledger_name || "N/A"
         end
       end
     end
     div class: "col col-xl-8 col-md-12" do
       table class: "table" do
         tbody do
-          account_property "Current Balance:", format_money(account.balance.balance, account.currency)
+          account_property "Current Balance:", format_money(account_balance.balance, account_balance.currency)
           account_property(
             "Additions (month | year | lifetime):",
-            format_money(account.balance.current_month_additions, account.currency),
-            format_money(account.balance.current_year_additions, account.currency),
-            format_money(account.balance.lifetime_additions, account.currency),
+            format_money(account_balance.current_month_additions, account_balance.currency),
+            format_money(account_balance.current_year_additions, account_balance.currency),
+            format_money(account_balance.lifetime_additions, account_balance.currency),
           )
           account_property(
             "Deductions (month | year | lifetime):",
-            format_money(account.balance.current_month_deductions, account.currency),
-            format_money(account.balance.current_year_deductions, account.currency),
-            format_money(account.balance.lifetime_deductions, account.currency),
+            format_money(account_balance.current_month_deductions, account_balance.currency),
+            format_money(account_balance.current_year_deductions, account_balance.currency),
+            format_money(account_balance.lifetime_deductions, account_balance.currency),
           )
           account_property(
             "Net Additions (month | year | lifetime):",
-            format_money(account.balance.current_month_net_additions, account.currency),
-            format_money(account.balance.current_year_net_additions, account.currency),
-            format_money(account.balance.lifetime_net_additions, account.currency),
+            format_money(account_balance.current_month_net_additions, account_balance.currency),
+            format_money(account_balance.current_year_net_additions, account_balance.currency),
+            format_money(account_balance.balance, account_balance.currency),
           )
         end
       end
@@ -83,7 +89,7 @@ class Accounts::ShowPage < MainLayout
   end
 
   private def render_search_filters
-    form id: "search_description", action: Accounts::Show.path(account.id), class: "form col col-12" do
+    form id: "search_description", action: Accounts::Show.path(account_balance.account_id), class: "form col col-12" do
       div class: "input-group mb-3" do
         span class: "input-group-text" { text "Search" }
         input(
@@ -131,15 +137,15 @@ class Accounts::ShowPage < MainLayout
                 end
                 td do
                   div class: "btn-group", role: "group", aria_label: "Actions" do
-                    if tx.type == "Expense" && account.type.name != "Expense"
-                      link "Edit", to: Expenses::Edit.with(tx.id, account_id: account.id), class: "btn btn-primary"
-                    elsif tx.type == "Income" && account.type.name != "Income"
-                      link "Edit", to: Income::Edit.with(tx.id, account_id: account.id), class: "btn btn-primary"
+                    if tx.type == "Expense" && account_balance.account_type_name != "Expense"
+                      link "Edit", to: Expenses::Edit.with(tx.id, account_id: account_balance.account_id), class: "btn btn-primary"
+                    elsif tx.type == "Income" && account_balance.account_type_name != "Income"
+                      link "Edit", to: Income::Edit.with(tx.id, account_id: account_balance.account_id), class: "btn btn-primary"
                     elsif tx.type == "Swap"
-                      link "Edit", to: Transfers::Edit.with(tx.id, account_id: account.id), class: "btn btn-primary"
+                      link "Edit", to: Transfers::Edit.with(tx.id, account_id: account_balance.account_id), class: "btn btn-primary"
                     end
 
-                    link "Delete", Transactions::Delete.with(tx.id, account_id: account.id), data_confirm: "Are you sure?", class: "btn btn-danger"
+                    link "Delete", Transactions::Delete.with(tx.id, account_id: account_balance.account_id), data_confirm: "Are you sure?", class: "btn btn-danger"
                   end
                 end
               end
@@ -165,7 +171,8 @@ class Accounts::ShowPage < MainLayout
     end
   end
 
-  private def format_money(amount : Float64, currency : Currency? = nil) : String
+  private def format_money(amount : Float64 | PG::Numeric, currency : Currency? = nil) : String
+    amount = amount.to_f64
     symbol = currency.try(&.symbol) || ""
     formatted = "#{symbol} #{amount.abs.format(decimal_places: 2)}".strip
 
@@ -188,7 +195,7 @@ class Accounts::ShowPage < MainLayout
       amount = format_money(tx.to_amount, tx.to_account.currency)
       css_class = "table-success"
     else # "Swap"
-      amount = if tx.from_account == account
+      amount = if tx.from_account.id == account_balance.account_id
                  format_money(tx.from_amount, tx.from_account.currency)
                else
                  format_money(tx.to_amount, tx.to_account.currency)
@@ -206,7 +213,7 @@ class Accounts::ShowPage < MainLayout
   private def double_entry_account(tx : Transaction)
     case tx.type
     when "Income"
-      if account == tx.to_account && account.type.name != "Income"
+      if account_balance.account_id == tx.to_account.id && account_balance.account_type_name != "Income"
         text "from: "
         link tx.from_account.name, to: Accounts::Show.with(tx.from_account.id)
       else
@@ -214,7 +221,7 @@ class Accounts::ShowPage < MainLayout
         link tx.to_account.name, to: Accounts::Show.with(tx.to_account.id)
       end
     when "Expense"
-      if account == tx.from_account && account.type.name != "Expense"
+      if account_balance.account_id == tx.from_account.id && account_balance.account_type_name != "Expense"
         text "to: "
         link tx.to_account.name, to: Accounts::Show.with(tx.to_account.id)
       else
@@ -222,7 +229,7 @@ class Accounts::ShowPage < MainLayout
         link tx.from_account.name, to: Accounts::Show.with(tx.from_account.id)
       end
     else # Swap
-      if account == tx.from_account
+      if account_balance.account_id == tx.from_account.id
         text "to: "
         link tx.to_account.name, to: Accounts::Show.with(tx.to_account.id)
       else
@@ -233,9 +240,9 @@ class Accounts::ShowPage < MainLayout
   end
 
   private def double_entry_amount(tx : Transaction)
-    if account == tx.from_account
+    if account_balance.account_id == tx.from_account.id
       text format_money(tx.to_amount, tx.to_account.currency)
-    elsif account == tx.to_account
+    elsif account_balance.account_id == tx.to_account.id
       text format_money(tx.from_amount, tx.from_account.currency)
     else
       text " - "

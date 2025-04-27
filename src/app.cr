@@ -9,6 +9,7 @@ Lucky::AssetHelpers.load_manifest "public/mix-manifest.json"
 
 require "../config/server"
 require "./app_database"
+require "./reporting_database"
 require "../config/**"
 require "./models/base_model"
 require "./models/mixins/**"
