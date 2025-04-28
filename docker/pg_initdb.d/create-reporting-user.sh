@@ -3,8 +3,8 @@
 # NOTE: Database needs to be restarted after this operation!
 set -eu
 
-POSTGRES_REPORTING_USER="$(echo "SELECT quote_ident(:user);" | psql -q -t -U lucky --variable="user='$POSTGRES_REPORTING_USER'" 2> /dev/null | xargs)"
-POSTGRES_REPORTING_PASSWORD="$(echo "SELECT quote_ident(:password)" | psql -q -t -U lucky --variable="password='$POSTGRES_REPORTING_PASSWORD'" 2> /dev/null | xargs)"
+POSTGRES_REPORTING_USER="$(echo "SELECT quote_ident(:user);" | psql -q -t -U "$POSTGRES_USER" --variable="user='$POSTGRES_REPORTING_USER'" 2> /dev/null | xargs)"
+POSTGRES_REPORTING_PASSWORD="$(echo "SELECT quote_ident(:password)" | psql -q -t -U "$POSTGRES_USER" --variable="password='$POSTGRES_REPORTING_PASSWORD'" 2> /dev/null | xargs)"
 
 psql -U $POSTGRES_USER -d $POSTGRES_DB <<-SQL
   DO \$$
