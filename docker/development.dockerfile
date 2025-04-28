@@ -1,4 +1,4 @@
-FROM crystallang/crystal:1.12.1
+FROM crystallang/crystal:1.16.1
 
 # Install utilities required to make this Dockerfile run
 RUN apt-get update && \
@@ -31,4 +31,3 @@ WORKDIR /app
 ENV DATABASE_URL=postgres://postgres:postgres@host.docker.internal:5432/postgres
 EXPOSE 3000
 EXPOSE 3001
-

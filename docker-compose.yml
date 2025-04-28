@@ -1,4 +1,4 @@
-version: "3.8"
+---
 services:
   lucky:
     build:
@@ -6,6 +6,7 @@ services:
       dockerfile: docker/development.dockerfile
     environment:
       DATABASE_URL: postgres://lucky:password@postgres:5432/lucky
+      REPORTING_DATABASE_URL: postgres://lucky_reporting:password@postgres:5432/lucky
       DEV_HOST: "0.0.0.0"
     volumes:
       - .:/app
@@ -16,19 +17,23 @@ services:
     depends_on:
       - postgres
     ports:
-      - 3000:3000 # This is the Lucky Server port
-      - 3001:3001 # This is the Lucky watcher reload port
+      - 3000:3000   # This is the Lucky Server port
+      - 3001:3001   # This is the Lucky watcher reload port
 
     entrypoint: ["docker/dev_entrypoint.sh"]
 
   postgres:
-    image: postgres:14-alpine
+    image: pgduckdb/pgduckdb:16-main
+    command: ["-c", "duckdb.postgres_role=lucky_reporting"]
     environment:
       POSTGRES_USER: lucky
       POSTGRES_PASSWORD: password
+      POSTGRES_REPORTING_USER: lucky_reporting
+      POSTGRES_REPORTING_PASSWORD: password
       POSTGRES_DB: lucky
     volumes:
       - postgres_data:/var/lib/postgresql/data
+      - ./docker/pg_initdb.d/:/docker-entrypoint-initdb.d
     ports:
       # The postgres database container is exposed on the host at port 6543 to
       # allow connecting directly to it with postgres clients. The port differs
