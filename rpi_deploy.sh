@@ -24,7 +24,7 @@ ssh $server <<-sh
   cd ~/khodo
   docker load -i khodo-${version}.img
   TAG=${version} docker-compose -f docker-compose-prod.yml up --wait --remove-orphans --detach
-  TAG=${version} docker-compose -f docker-compose-prod.yml exec postgres /docker-entrypoint-initdb.d/create-reporting-user.sh
+  TAG=${version} docker-compose -f docker-compose-prod.yml exec --no-tty postgres /docker-entrypoint-initdb.d/create-reporting-user.sh
   TAG=${version} docker-compose -f docker-compose-prod.yml restart --no-deps postgres
   rm -f khodo-${version}.img
 sh
