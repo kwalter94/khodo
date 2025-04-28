@@ -41,6 +41,7 @@ services:
 
   postgres:
     image: pgduckdb/pgduckdb:16-main
+    command: ["-c", "duckdb.postgres_role=${DATABASE_REPORTING_USER:-khodo_reporting}", "-c", "shared_preload_libraries=pg_duckdb"]
     environment:
       POSTGRES_USER: ${DATABASE_USER:-khodo}
       POSTGRES_PASSWORD: ${DATABASE_PASSWORD:-password}
