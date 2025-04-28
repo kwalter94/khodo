@@ -1,7 +1,7 @@
 ---
 x-lucky-env: &lucky-env
   DATABASE_URL: postgres://${DATABASE_USER:-khodo}:${DATABASE_PASSWORD:-password}@postgres:5432/${DATABASE_NAME:-khodo}
-  REPORTING_DATABASE_URL: postgres://${REPORTING_DATABASE_USER:-khodo_reporting}:${REPORTING_DATABASE_PASSWORD:-password}@postgres:5432/${DATABASE_NAME:-khodo}
+  REPORTING_DATABASE_URL: postgres://${DATABASE_REPORTING_USER:-khodo_reporting}:${DATABASE_REPORTING_PASSWORD:-password}@postgres:5432/${DATABASE_NAME:-khodo}
   LUCKY_ENV: production
   SECRET_KEY_BASE: ${SECRET_KEY:-}
   HOST: 127.0.0.1
@@ -44,11 +44,12 @@ services:
     environment:
       POSTGRES_USER: ${DATABASE_USER:-khodo}
       POSTGRES_PASSWORD: ${DATABASE_PASSWORD:-password}
-      REPORTING_POSTGRES_USER: ${REPORTING_DATABASE_USER:-khodo_reporting}
-      REPORTING_POSTGRES_PASSWORD: ${REPORTING_DATABASE_PASSWORD:-password}
+      POSTGRES_REPORTING_USER: ${DATABASE_REPORTING_USER:-khodo_reporting}
+      POSTGRES_REPORTING_PASSWORD: ${DATABASE_REPORTING_PASSWORD:-password}
       POSTGRES_DB: ${DATABASE_NAME:-khodo}
     ports:
       - 6543:5432
     restart: on-failure
+    user: root
     volumes:
       - ./docker/pg_initdb.d/:/docker-entrypoint-initdb.d
