@@ -10,6 +10,7 @@ class Accounts::Index < BrowserAction
       .new
       .owner_id(current_user.id)
       .ledger_id(ledger_id || current_user_general_ledger.id)
+      .reject { |report| ["Expense", "Income"].includes?(report.account_type_name) }
 
     currencies = CurrencyQuery
       .new

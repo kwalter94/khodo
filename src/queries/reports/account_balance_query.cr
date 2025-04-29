@@ -87,7 +87,6 @@ module Reports
           FROM accounts
           INNER JOIN account_types
             ON account_types.id = accounts.type_id
-            AND account_types.name NOT IN ('Expense', 'Income')
           INNER JOIN ledgers
             ON ledgers.id = accounts.ledger_id
           INNER JOIN currencies

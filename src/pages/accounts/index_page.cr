@@ -1,9 +1,9 @@
 class Accounts::IndexPage < MainLayout
-  needs report : Reports::AccountBalanceQuery  # ameba:disable Lint/UselessAssign
-  needs currencies : Enumerable(Currency)      # ameba:disable Lint/UselessAssign
-  needs reporting_currency : Currency          # ameba:disable Lint/UselessAssign
-  needs exchange_rates : Hash(Int64, Float64?) # ameba:disable Lint/UselessAssign
-  needs ledger : Ledger                        # ameba:disable Lint/UselessAssign
+  needs report : Enumerable(Reports::AccountBalance) # ameba:disable Lint/UselessAssign
+  needs currencies : Enumerable(Currency)            # ameba:disable Lint/UselessAssign
+  needs reporting_currency : Currency                # ameba:disable Lint/UselessAssign
+  needs exchange_rates : Hash(Int64, Float64?)       # ameba:disable Lint/UselessAssign
+  needs ledger : Ledger                              # ameba:disable Lint/UselessAssign
 
   quick_def page_title, "#{ledger.name} Accounts"
 
