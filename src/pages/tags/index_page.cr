@@ -1,7 +1,7 @@
 class Tags::IndexPage < MainLayout
-  needs report : Enumerable(MonthlyTransactionsByTagReport) # ameba:disable Lint/UselessAssign
-  needs reporting_currency : Currency                       # ameba:disable Lint/UselessAssign
-  needs currencies : Enumerable(Currency)                   # ameba:disable Lint/UselessAssign
+  needs report : Enumerable(Reports::MonthlyTransactionsByTag) # ameba:disable Lint/UselessAssign
+  needs reporting_currency : Currency                          # ameba:disable Lint/UselessAssign
+  needs currencies : Enumerable(Currency)                      # ameba:disable Lint/UselessAssign
 
   quick_def page_title, "All Tags"
 

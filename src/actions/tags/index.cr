@@ -5,12 +5,11 @@ class Tags::Index < BrowserAction
     currency = currency_id.try { |id| CurrencyQuery.new.owner_id(current_user.id).id(id).first? }
     currency ||= CurrencyQuery.find_user_default_currency(current_user.id)
 
-    report = MonthlyTransactionsByTagReportQuery
+    report = Reports::MonthlyTransactionsByTagQuery
       .new
       .user_id(current_user.id)
       .period(1)
       .currency_id(currency.id)
-      .tag_name.asc_order
 
     html IndexPage,
       report: report,
