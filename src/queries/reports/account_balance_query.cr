@@ -1,4 +1,3 @@
-require "../../models/reports/*"
 require "./base_report_query"
 
 module Reports

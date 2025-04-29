@@ -8,20 +8,20 @@ class Home::Index < BrowserAction
     flash_missing_currencies(currency)
 
     report = account_balance_report(currency)
-    total_assets, new_assets = total_balance(report, "Asset")
-    total_liabilities, new_liabilities = total_balance(report, "Liability")
+    assets = total_balance(report, "Asset")
+    liabilities = total_balance(report, "Liability")
 
     html Home::IndexPage,
       reporting_currency: currency,
       currencies: user_currencies,
       net_worth: Home::IndexPage::NetWorth.new(
-        total_assets: total_assets,
-        new_assets: new_assets,
-        total_liabilities: total_liabilities,
+        total_assets: assets[:total],
+        new_assets: assets[:new_receipts],
+        total_liabilities: liabilities[:total],
         # NOTE: Liabilities are negative (bug that turned into a feature)
-        new_liabilities: -new_liabilities,
-        value: total_assets + total_liabilities,
-        change: new_assets + new_liabilities,
+        new_liabilities: -liabilities[:new_receipts],
+        value: assets[:total] + liabilities[:total],
+        change: assets[:new_receipts] + liabilities[:new_receipts],
       )
   rescue error : UserProperties::ConfigurationError
     flash.info = "You need to set a default currency first!"
@@ -50,18 +50,26 @@ class Home::Index < BrowserAction
     flash.set("warning", "You may be viewing innacurate reports due to missing currency conversions: #{conversions}")
   end
 
-  private def account_balance_report(currency : Currency) : CumulativeAccountBalanceReportQuery
-    CumulativeAccountBalanceReportQuery
+  private def account_balance_report(currency : Currency) : Reports::CumulativeAccountBalanceQuery
+    Reports::CumulativeAccountBalanceQuery
       .new
       .owner_id(current_user.id)
       .currency_id(currency.id)
       .period(1)
   end
 
-  private def total_balance(report : CumulativeAccountBalanceReportQuery, account_type_name : String) : Tuple(Float64, Float64)
+  private def total_balance(
+    report : Reports::CumulativeAccountBalanceQuery,
+    account_type_name : String,
+  ) : NamedTuple(total: Float64, new_receipts: Float64)
     report
       .select { |account| account.account_type_name == account_type_name }
-      .reduce({0.0.to_f64, 0.0.to_f64}) { |accum, account| {account.balance + accum[0], account.net_receipts + accum[1]} }
+      .reduce({total: 0.0.to_f64, new_receipts: 0.0.to_f64}) do |accum, account|
+        {
+          total:        account.balance.to_f64 + accum[:total],
+          new_receipts: account.net_receipts.to_f64 + accum[:new_receipts],
+        }
+      end
   end
 
   private def user_currencies : Enumerable(Currency)

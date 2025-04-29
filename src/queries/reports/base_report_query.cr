@@ -1,4 +1,5 @@
 require "db"
+require "../../models/reports/*"
 
 module Reports
   abstract class BaseReportQuery(T)
@@ -13,19 +14,25 @@ module Reports
       end
     end
 
+    @results : Array(T)?
+
     def initialize
       initialize([] of Tuple(String, DB::Any))
     end
 
     protected def initialize(filters : Array(Tuple(String, DB::Any)))
       @filters = filters
+      @results = nil
     end
 
-    def each(&)
+    def each(& : T -> Nil)
       query, args = build_query()
 
-      results = ReportingDatabase.query_all(query, args: args, as: T)
-      results.each { |result| yield result }
+      @results ||= ReportingDatabase.query_all(query, args: args, as: T).to_a
+
+      @results.try do |results|
+        results.each { |result| yield result }
+      end
     end
 
     protected abstract def base_sql : String

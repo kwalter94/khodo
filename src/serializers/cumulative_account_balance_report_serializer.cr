@@ -1,5 +1,5 @@
 class CumulativeAccountBalanceReportSerializer < BaseSerializer
-  def initialize(@report : CumulativeAccountBalanceReport)
+  def initialize(@report : Reports::CumulativeAccountBalance)
   end
 
   def render
