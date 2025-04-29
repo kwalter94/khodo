@@ -8,7 +8,6 @@ WORKDIR /khodo
 RUN apt-get update -q \
   && apt-get install --no-install-recommends -y \
     git \
-    libsqlite3-dev \
     libc6-dev \
     libevent-dev \
     libgmp-dev \
@@ -42,7 +41,6 @@ RUN apt-get update -q \
   && apt-get install --no-install-recommends -y \
     build-essential \
     libgc-dev \
-    libsqlite3-dev \
     libc6-dev \
     libevent-dev \
     libgmp-dev \
@@ -86,7 +84,6 @@ RUN cc tasks.o \
     -rdynamic \
     -static \
     -L/usr/lib/crystal \
-    -lsqlite3 \
     -lz \
     -lm \
     -lgmp \
