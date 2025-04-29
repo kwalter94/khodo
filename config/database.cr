@@ -9,9 +9,9 @@ AppDatabase.configure do |settings|
       hostname: ENV["DB_HOST"]? || "localhost",
       port: ENV["DB_PORT"]?.try(&.to_i) || 5432,
       # Some common usernames are "postgres", "root", or your system username (run 'whoami')
-      username: ENV["DB_USERNAME"]? || "postgres",
+      username: ENV["DB_USERNAME"],
       # Some Postgres installations require no password. Use "" if that is the case.
-      password: ENV["DB_PASSWORD"]? || "postgres",
+      password: ENV["DB_PASSWORD"],
     )
   end
 end
@@ -27,8 +27,8 @@ ReportingDatabase.configure do |settings|
       # This user needs read only access to the reporting schema and must
       # have configuration `ALTER USER my_analytics_user SET duckdb.force_execution TO true`
       # if using pg_duckdb (this is recommended)
-      username: ENV["DB_REPORTING_USERNAME"]? || "postgres",
-      password: ENV["DB_REPORTING_PASSWORD"]? || "postgres",
+      username: ENV["DB_REPORTING_USERNAME"],
+      password: ENV["DB_REPORTING_PASSWORD"],
     )
   end
 end
