@@ -56,9 +56,9 @@ module Reports
         balance AS (
           SELECT
             *,
-            lifetime_additions - lifetime_deductions AS balance,
-            current_year_additions - current_year_deductions AS current_year_net_additions,
-            current_month_additions - current_month_deductions AS current_month_net_additions
+            COALESCE(lifetime_additions, 0.0) - COALESCE(lifetime_deductions, 0.0) AS balance,
+            COALESCE(current_year_additions, 0.0) - COALESCE(current_year_deductions, 0.0) AS current_year_net_additions,
+            COALESCE(current_month_additions, 0.0) - COALESCE(current_month_deductions, 0.0) AS current_month_net_additions
           FROM additions
           LEFT JOIN deductions
             USING (account_id)
