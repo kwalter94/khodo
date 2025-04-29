@@ -1,5 +1,5 @@
 class MonthlySavingsReportSerializer < BaseSerializer
-  def initialize(@report : MonthlySavingsReport)
+  def initialize(@report : Reports::MonthlySavings)
   end
 
   def render

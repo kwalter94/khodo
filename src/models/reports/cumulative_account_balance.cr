@@ -1,5 +1,4 @@
 require "db"
-require "pg"
 
 module Reports
   class CumulativeAccountBalance
