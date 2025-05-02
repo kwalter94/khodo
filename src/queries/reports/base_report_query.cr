@@ -40,7 +40,17 @@ module Reports
     protected def build_query : Tuple(String, Array(DB::Any))
       clause, args = build_where_clause()
 
-      {"#{base_sql}\n#{clause}", args}
+      query = <<-SQL
+        WITH report AS (
+          #{base_sql}
+        )
+        SELECT
+          report.*
+        FROM report
+        #{clause}
+      SQL
+
+      {query, args}
     end
 
     private def build_where_clause : Tuple(String, Array(DB::Any))
