@@ -8,9 +8,12 @@ module Reports
     property currency_id : Int64
     property currency_name : String
     property currency_symbol : String
-    property income : Float64?
-    property expenses : Float64?
-    property savings : Float64?
+    property income : Float64
+    property average_income : Float64
+    property expenses : Float64
+    property average_expenses : Float64
+    property savings : Float64
+    property average_savings : Float64
     property period : Int64
     property user_id : Int64
   end

@@ -61,9 +61,16 @@ class Home::IndexPage < MainLayout
   end
 
   private def render_savings_chart
-    div class: "col col-12" do
-      h6 "Income vs Expenses", class: "text-center"
-      empty_tag "canvas", id: "savings", class: "chart", data_controller: "savings-chart"
+    div class: "col col-md-12", data_controller: "savings-chart" do
+      div do
+        h6 "Income vs Expenses", class: "text-center"
+        empty_tag "canvas", id: "income-vs-expenses", class: "chart"
+      end
+
+      div do
+        h6 "Average Income vs Average Expenses", class: "text-center"
+        empty_tag "canvas", id: "average-income-vs-expenses", class: "chart"
+      end
     end
   end
 
@@ -72,10 +79,12 @@ class Home::IndexPage < MainLayout
       div class: "card-body" do
         h5 class: "card-title" { text format_money(number, reporting_currency) }
 
-        small class: "card-subtitle text-muted" do
-          change_indicator change
-          text format_money(change.abs, reporting_currency)
-          text " from last month"
+        change.try do |delta|
+          small class: "card-subtitle text-muted" do
+            change_indicator delta
+            text format_money(delta.abs, reporting_currency)
+            text " from last month"
+          end
         end
       end
 

@@ -109,10 +109,15 @@ module Reports
 	          income,
 	          expenses,
 	          income - expenses AS savings,
-	          user_id,
-	          ROW_NUMBER() OVER (PARTITION BY currency_id ORDER BY month DESC) AS period
+            AVG(income) OVER (PARTITION BY user_id, currency_id ORDER BY month ROWS BETWEEN 4 PRECEDING AND 0 FOLLOWING) AS average_income,
+            AVG(expenses) OVER (PARTITION BY user_id, currency_id ORDER BY month GROUPS BETWEEN 4 PRECEDING AND 0 FOLLOWING) AS average_expenses,
+            AVG(income - expenses) OVER (PARTITION BY user_id, currency_id ORDER BY month GROUPS BETWEEN 4 PRECEDING AND 0 FOLLOWING) AS average_savings,
+            ROW_NUMBER() OVER (PARTITION BY currency_id ORDER BY month DESC) AS period,
+	          user_id
 	        FROM monthly_savings
-	        ORDER BY currency_name, month
+	        ORDER BY
+            currency_name,
+            month
         )
         SELECT * FROM materialized
       SQL

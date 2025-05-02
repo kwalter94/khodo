@@ -8,7 +8,8 @@ export default class extends Controller {
 
     this
       .fetchSavingsReport(currency_id)
-      .then(report => this.renderChart(report));
+      .then(report => this.renderIncomeVsExpenses(report))
+      .then(report => this.renderAverageIncomeVsExpenses(report))
   }
 
   async fetchSavingsReport(currency_id) {
@@ -27,10 +28,10 @@ export default class extends Controller {
     return await response.json();
   }
 
-  async renderChart(report) {
+  renderIncomeVsExpenses(report) {
     report = report.filter(({period}) => period <= 12);
 
-    new Chart(this.element, {
+    new Chart(this.element.querySelector("#income-vs-expenses"), {
       type: "line",
       data: {
         labels: report.map(({month}) => month),
@@ -61,5 +62,46 @@ export default class extends Controller {
         legend: { position: "bottom" },
       },
     });
+
+    return report;
+  }
+
+  renderAverageIncomeVsExpenses(report) {
+    report = report.filter(({period}) => period <= 12);
+
+    new Chart(this.element.querySelector("#average-income-vs-expenses"), {
+      type: "line",
+      data: {
+        labels: report.map(({month}) => month),
+        datasets: [
+          {
+            label: "Income",
+            data: report.map(({average_income}) => average_income),
+            borderColor: "rgb(0, 0, 255)",
+            backgroundColor: "rgba(0, 0, 255, 0.5)",
+          },
+          {
+            label: "Expenses",
+            data: report.map(({average_expenses}) => average_expenses),
+            borderColor: "rgb(255, 0, 0)",
+            backgroundColor: "rgba(255, 0, 0, 0.5)",
+          },
+          {
+            label: "Savings",
+            data: report.map(({average_savings}) => average_savings),
+            borderColor: "rgb(0, 128, 0)",
+            backgroundColor: "rgba(0, 128, 0, 0.5)",
+            fill: true,
+          },
+        ],
+      },
+      options: {
+        responsive: true,
+        legend: { position: "bottom" },
+      },
+    });
+
+    return report;
+
   }
 }
