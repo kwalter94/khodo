@@ -1,6 +1,6 @@
 class ExchangeRates::FormFields < BaseComponent
-  needs operation : SaveExchangeRate
-  needs currencies : Enumerable(Currency)
+  needs operation : SaveExchangeRate      # ameba:disable Lint/UselessAssign
+  needs currencies : Enumerable(Currency) # ameba:disable Lint/UselessAssign
 
   def render
     currency_options = currencies.map { |currency| {currency.name, currency.id} }
@@ -18,7 +18,7 @@ class ExchangeRates::FormFields < BaseComponent
     end
 
     mount Shared::Field, operation.rate do |input|
-      input.number_input(min: "0.1", step: "0.1")
+      input.number_input(min: "0.1", step: "0.01")
     end
   end
 end
