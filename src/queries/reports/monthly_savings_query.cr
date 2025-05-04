@@ -33,7 +33,7 @@ module Reports
           LEFT JOIN user_active_months
             ON STRFTIME(user_active_months.month, '%Y-%n') <= STRFTIME(month_series.month, '%Y-%m')
           WHERE
-          	month_series.month < CURRENT_DATE
+              month_series.month < CURRENT_DATE
         ),
         monthly_income AS (
           SELECT
@@ -101,21 +101,21 @@ module Reports
             monthly_income.user_id
         ),
         materialized AS (
-	        SELECT
-	          month,
-	          currency_id,
-	          currency_name,
-	          currency_symbol,
-	          income,
-	          expenses,
-	          income - expenses AS savings,
-            AVG(income) OVER (PARTITION BY user_id, currency_id ORDER BY month ROWS BETWEEN 4 PRECEDING AND 0 FOLLOWING) AS average_income,
-            AVG(expenses) OVER (PARTITION BY user_id, currency_id ORDER BY month GROUPS BETWEEN 4 PRECEDING AND 0 FOLLOWING) AS average_expenses,
-            AVG(income - expenses) OVER (PARTITION BY user_id, currency_id ORDER BY month GROUPS BETWEEN 4 PRECEDING AND 0 FOLLOWING) AS average_savings,
-            ROW_NUMBER() OVER (PARTITION BY currency_id ORDER BY month DESC) AS period,
-	          user_id
-	        FROM monthly_savings
-	        ORDER BY
+            SELECT
+              month,
+              currency_id,
+              currency_name,
+              currency_symbol,
+              income,
+              expenses,
+              income - expenses AS savings,
+              AVG(income) OVER (PARTITION BY user_id, currency_id ORDER BY month ROWS BETWEEN 4 PRECEDING AND 0 FOLLOWING) AS average_income,
+              AVG(expenses) OVER (PARTITION BY user_id, currency_id ORDER BY month GROUPS BETWEEN 4 PRECEDING AND 0 FOLLOWING) AS average_expenses,
+              AVG(income - expenses) OVER (PARTITION BY user_id, currency_id ORDER BY month GROUPS BETWEEN 4 PRECEDING AND 0 FOLLOWING) AS average_savings,
+              ROW_NUMBER() OVER (PARTITION BY currency_id ORDER BY month DESC) AS period,
+              user_id
+            FROM monthly_savings
+            ORDER BY
             currency_name,
             month
         )
