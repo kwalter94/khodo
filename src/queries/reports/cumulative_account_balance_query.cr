@@ -33,12 +33,12 @@ module Reports
             STRFTIME(month_series.month, '%Y-%m') AS month
           FROM month_series
           LEFT JOIN user_active_months
-            ON STRFTIME(user_active_months.month, '%Y-%n') <= STRFTIME(month_series.month, '%Y-%m')
+            ON STRFTIME(user_active_months.month, '%Y-%m') <= STRFTIME(month_series.month, '%Y-%m')
           WHERE
           	month_series.month < CURRENT_DATE
         ),
         account_receipts AS (
-          SELECT
+          SELECT DISTINCT
             accounts.owner_id,
             accounts.id AS account_id,
             accounts.name AS account_name,
@@ -78,7 +78,7 @@ module Reports
             months.month
         ),
         account_deductions AS (
-          SELECT
+          SELECT DISTINCT
             accounts.owner_id,
             accounts.id AS account_id,
             exchange_rate.to_currency_id AS currency_id,
@@ -110,7 +110,7 @@ module Reports
             months.month
         ),
         account_balances AS (
-          SELECT
+          SELECT DISTINCT
             account_receipts.month,
             account_receipts.account_name,
             account_receipts.account_type_name,
@@ -138,7 +138,7 @@ module Reports
             ON ledgers.owner_id = account_receipts.owner_id
             AND ledgers.id = account_receipts.ledger_id
         ),
-        materialized AS (
+        cumulative_account_balance AS (
           SELECT
             *,
             ROW_NUMBER() OVER (
@@ -148,7 +148,7 @@ module Reports
           FROM account_balances
           ORDER BY account_name, month DESC
         )
-        SELECT * FROM materialized
+        SELECT * FROM cumulative_account_balance
       SQL
     end
   end

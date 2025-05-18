@@ -32,7 +32,7 @@ module Reports
             STRFTIME(month_series.month, '%Y-%m') AS month
           FROM month_series
           LEFT JOIN user_active_months
-            ON STRFTIME(user_active_months.month, '%Y-%n') <= STRFTIME(month_series.month, '%Y-%m')
+            ON STRFTIME(user_active_months.month, '%Y-%m') <= STRFTIME(month_series.month, '%Y-%m')
           WHERE
           	month_series.month < CURRENT_DATE
         ),
@@ -118,7 +118,7 @@ module Reports
             tags.id,
             tags.name
         ),
-        report AS (
+        monthly_txs_by_tag AS (
           SELECT
             tags.owner_id AS user_id,
             months.month,
@@ -156,7 +156,7 @@ module Reports
           	currencies.name,
           	tags.name
         ),
-        materialized AS (
+        monthly_txs_by_tag_report AS (
           SELECT
             user_id,
             month,
@@ -169,11 +169,11 @@ module Reports
             total_expenses,
             total_income - total_expenses AS net_income,
             period
-          FROM report
+          FROM monthly_txs_by_tag
           WHERE
             period <= 12
         )
-        SELECT * FROM materialized
+        SELECT * FROM monthly_txs_by_tag_report
       SQL
     end
   end

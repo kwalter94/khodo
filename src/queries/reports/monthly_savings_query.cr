@@ -31,7 +31,7 @@ module Reports
             STRFTIME(month_series.month, '%Y-%m') AS month
           FROM month_series
           LEFT JOIN user_active_months
-            ON STRFTIME(user_active_months.month, '%Y-%n') <= STRFTIME(month_series.month, '%Y-%m')
+            ON STRFTIME(user_active_months.month, '%Y-%m') <= STRFTIME(month_series.month, '%Y-%m')
           WHERE
               month_series.month < CURRENT_DATE
         ),
@@ -100,7 +100,7 @@ module Reports
             currencies.symbol,
             monthly_income.user_id
         ),
-        materialized AS (
+        monthly_savings_report AS (
             SELECT
               month,
               currency_id,
@@ -119,7 +119,7 @@ module Reports
             currency_name,
             month
         )
-        SELECT * FROM materialized
+        SELECT * FROM monthly_savings_report
       SQL
     end
   end
