@@ -17,7 +17,7 @@ module Reports
               month + INTERVAL '1 month'
             FROM month_series
             WHERE
-              month < CURRENT_DATE
+              month <= CURRENT_DATE
         ),
         user_active_months AS (
           SELECT DISTINCT
@@ -35,7 +35,7 @@ module Reports
           LEFT JOIN user_active_months
             ON STRFTIME(user_active_months.month, '%Y-%m') <= STRFTIME(month_series.month, '%Y-%m')
           WHERE
-          	month_series.month < CURRENT_DATE
+          	month_series.month <= CURRENT_DATE
         ),
         account_receipts AS (
           SELECT DISTINCT
