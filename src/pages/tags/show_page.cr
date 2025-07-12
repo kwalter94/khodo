@@ -28,7 +28,12 @@ class Tags::ShowPage < MainLayout
 
     div class: "row" do
       div class: "col col-12" { render_currency_selector }
-      div class: "col col-12" { empty_tag "canvas", data_controller: "monthly-transactions-by-tag-chart" }
+      div class: "col col-12" do
+        div class: "chart", data_controller: "monthly-transactions-by-tag-chart" do
+          h6 "Monthly Transactions by Tag", class: "text-center"
+          para "This chart shows the monthly transactions associated with this tag. It includes both income and expenses."
+        end
+      end
     end
 
     div class: "row" do

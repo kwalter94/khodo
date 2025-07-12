@@ -6,8 +6,6 @@ import Rails from "@rails/ujs";
 Rails.start();
 
 import bootstrap from "bootstrap";
-import { Chart } from "chart.js/auto";  // Autoload chartjs
-Chart.defaults.plugins.legend.position = "bottom";
 
 import { Application } from "@hotwired/stimulus";
 import { definitionsFromContext } from "@hotwired/stimulus-webpack-helpers";

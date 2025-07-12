@@ -56,7 +56,9 @@ class Home::IndexPage < MainLayout
   private def render_cumulative_accounts_chart
     div class: "col col-12" do
       h6 "Accounts Growth", class: "text-center"
-      empty_tag "canvas", id: "accounts-growth", class: "chart", data_controller: "cumulative-accounts-chart"
+      div class: "chart", id: "accounts-growth", data_controller: "cumulative-accounts-chart" do
+        para "This chart shows the cumulative growth of your accounts over time. It includes all accounts, including those that are not currently active."
+      end
     end
   end
 
@@ -64,12 +66,16 @@ class Home::IndexPage < MainLayout
     div class: "col col-md-12", data_controller: "savings-chart" do
       div do
         h6 "Income vs Expenses", class: "text-center"
-        empty_tag "canvas", id: "income-vs-expenses", class: "chart"
+        div class: "chart", id: "income-vs-expenses" do
+          para "This chart shows the income and expenses over the last 12 months. It helps you to see if you are spending more than you earn."
+        end
       end
 
       div do
         h6 "Average Income vs Average Expenses", class: "text-center"
-        empty_tag "canvas", id: "average-income-vs-expenses", class: "chart"
+        div class: "chart", id: "average-income-vs-expenses" do
+          para "This chart shows the average income and expenses over the last 12 months. It helps you to see if you are saving enough money each month."
+        end
       end
     end
   end

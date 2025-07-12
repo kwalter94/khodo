@@ -1,5 +1,5 @@
 import { Controller } from "@hotwired/stimulus";
-import { Chart } from "chart.js";
+import * as echarts from "echarts";
 
 export default class extends Controller {
   connect() {
@@ -46,22 +46,29 @@ export default class extends Controller {
       periods[periods.length - period] = balance;
     }
 
-    new Chart(this.element, {
-      type: "bar",
-      data: {
-        labels: [...months.values()].sort(),
-        datasets: [...accounts.entries()].map(([label, data]) => ({label, data})),
+    const chart = echarts.init(this.element);
+    window.addEventListener("resize", () => chart.resize());
+    chart.setOption({
+      title: {
+        "text": "Monthly Assets Growth"
       },
-      options: {
-        scales: {
-          x: {stacked: true},
-          y: {stacked: true},
-        },
-        plugins: {
-          legend: { display: true },
-        },
-        responsive: true,
+      tooltip: {},
+      legend: {
+        "data": [...accounts.entries().map(([label, _data]) => label)],
+        "orient": "horizontal",
+        "top": "bottom",
+        "type": "scroll",
       },
+      xAxis: {
+        "data": [...months.values()].sort(),
+      },
+      yAxis: {},
+      series: [...accounts.entries()].map(([label, data]) => ({
+        name: label,
+        type: "bar",
+        stack: "total",
+        data: data,
+      })),
     });
   }
 }

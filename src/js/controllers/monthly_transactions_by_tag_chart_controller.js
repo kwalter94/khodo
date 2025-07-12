@@ -1,9 +1,8 @@
 import { Controller } from "@hotwired/stimulus";
-import { Chart } from "chart.js";
+import * as echarts from "echarts";
 
 export default class extends Controller {
   connect() {
-    console.log("Loading controller");
     this.tag_id = document.location.pathname.split("/").pop();
     const params = new URLSearchParams(document.location.search);
     this.currency_id = params.get("currency_id");
@@ -23,29 +22,39 @@ export default class extends Controller {
     }
 
     const report = await response.json();
-    new Chart(this.element, {
-      type: "bar",
-      data: {
-        labels: report.map(({month}) => month),
-        datasets: [
-          {
-            "label": "Income",
-            "data": report.map(({income}) => income),
-            "backgroundColor": "rgba(0, 255, 128, 0.5)",
-          },
-          {
-            "label": "Expenses",
-            "data": report.map(({expenses}) => expenses),
-            "backgroundColor": "rgba(255, 0, 128, 0.5)",
-          }
-        ],
+
+    const chart = echarts.init(this.element);
+    window.addEventListener("resize", () => chart.resize());
+    chart.setOption({
+      title: {
+        text: "Monthly Transactions by Tag",
       },
-      options: {
-        plugins: {
-          legend: { display: true },
+      tooltip: {},
+      legend: {
+        data: ["Income", "Expenses"],
+        top: "bottom",
+        orient: "horizontal",
+      },
+      xAxis: {
+        data: report.map(({month}) => month),
+      },
+      yAxis: {},
+      series: [
+        {
+          name: "Income",
+          type: "line",
+          smooth: true,
+          data: report.map(({income, expenses}) => income),
+          itemStyle: { color: "rgb(0, 255, 128)" },
         },
-        responsive: true,
-      },
+        {
+          name: "Expenses",
+          type: "line",
+          smooth: true,
+          data: report.map(({expenses}) => expenses),
+          itemStyle: { color: "rgb(255, 0, 128)" },
+        }
+      ],
     });
   }
 }
