@@ -40,15 +40,15 @@ class Home::IndexPage < MainLayout
   end
 
   private def render_net_worth_chart
-    div class: "col col-md-4 col-12" do
+    div class: "col col-lg-4 col-xl-2 offset-xl-3 col-12" do
       number_card label: "Net Worth", number: net_worth.value, change: net_worth.change, color: "bg-primary"
     end
 
-    div class: "col col-md-4 col-12" do
+    div class: "col col-md-4 col-xl-2 col-12" do
       number_card label: "Assets", number: net_worth.total_assets, change: net_worth.new_assets, color: "bg-success"
     end
 
-    div class: "col col-md-4 col-12" do
+    div class: "col col-md-4 col-xl-2 col-12" do
       number_card label: "Liabilities", number: net_worth.total_liabilities, change: net_worth.new_liabilities, color: "bg-danger"
     end
   end
@@ -63,15 +63,15 @@ class Home::IndexPage < MainLayout
   end
 
   private def render_savings_chart
-    div class: "col col-md-12", data_controller: "savings-chart" do
-      div do
+    div class: "row", data_controller: "savings-chart" do
+      div class: "col col-lg-12 col-xl-6" do
         h6 "Income vs Expenses", class: "text-center"
         div class: "chart", id: "income-vs-expenses" do
           para "This chart shows the income and expenses over the last 12 months. It helps you to see if you are spending more than you earn."
         end
       end
 
-      div do
+      div class: "col-lg-12 col-xl-6" do
         h6 "Average Income vs Average Expenses", class: "text-center"
         div class: "chart", id: "average-income-vs-expenses" do
           para "This chart shows the average income and expenses over the last 12 months. It helps you to see if you are saving enough money each month."

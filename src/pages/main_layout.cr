@@ -35,7 +35,7 @@ abstract class MainLayout
         mount Shared::Navbar, current_user: current_user, ledgers: ledgers
         mount Shared::FlashMessages, context.flash
 
-        div class: "container" do
+        div class: "container-fluid" do
           content
         end
       end
