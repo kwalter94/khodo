@@ -4,10 +4,10 @@ export default class extends Controller {
   static targets = ["currencyId"];
 
   onChange() {
-    const currencyId = this.currencyIdTarget.value;
-    const url = new URL(window.location.href);
-    url.searchParams.set("currency_id", currencyId);
+    const params = new URLSearchParams();
+    params.set("currency_id", this.currencyIdTarget.value);
+    params.set("redirect_url", window.location.toString());
 
-    window.location.assign(url.toString());
+    window.location.assign(`/reporting_currency/_update?${params.toString()}`);
   }
 }

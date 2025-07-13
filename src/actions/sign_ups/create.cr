@@ -1,5 +1,6 @@
 class SignUps::Create < BrowserAction
   include Auth::RedirectSignedInUsers
+  skip require_reporting_currency
 
   post "/sign_up" do
     SignUpUser.create(params) do |operation, user|

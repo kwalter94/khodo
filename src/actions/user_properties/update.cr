@@ -1,4 +1,6 @@
 class UserProperties::Update < BrowserAction
+  skip require_reporting_currency
+
   put "/user_properties" do
     user_properties = UserPropertiesQuery.new.user_id(current_user.id).first
 

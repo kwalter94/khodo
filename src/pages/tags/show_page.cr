@@ -87,11 +87,7 @@ class Tags::ShowPage < MainLayout
   end
 
   private def render_transactions_search_filter
-    form(
-      id: "search_tx_form",
-      action: Tags::Show.path(tag.id, currency_id: reporting_currency.id),
-      class: "form col col-12",
-    ) do
+    form id: "search_tx_form", action: Tags::Show.path(tag.id), class: "form col col-12" do
       div class: "input-group mb-3" do
         span class: "input-group-text" { text "Search" }
         input(

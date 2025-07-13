@@ -3,7 +3,7 @@ class ExchangeRates::FormFields < BaseComponent
   needs currencies : Enumerable(Currency) # ameba:disable Lint/UselessAssign
 
   def render
-    currency_options = currencies.map { |currency| {currency.name, currency.id} }
+    currency_options = currencies.map { |currency| {currency.name, currency.id} }.to_a
 
     mount Shared::Field, operation.from_currency_id do |input|
       input.select_input do

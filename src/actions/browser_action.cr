@@ -39,6 +39,9 @@ abstract class BrowserAction < Lucky::Action
   # so that any page that inherits from MainLayout can use the `current_user`
   expose current_user
   expose ledgers
+  expose reporting_currency
+
+  before require_reporting_currency
 
   # This method tells Authentic how to find the current user
   # The 'memoize' macro makes sure only one query is issued to find the user
@@ -48,5 +51,54 @@ abstract class BrowserAction < Lucky::Action
 
   private def ledgers : Enumerable(Ledger)
     current_user.try { |user| LedgerQuery.new.owner_id(user.id) } || [] of Ledger
+  end
+
+  private memoize def reporting_currency : Currency
+    current_user.try do |user|
+      currency = cookies.get?("reporting_currency_id").try do |currency_id|
+        CurrencyQuery.new.owner_id(user.id).id(currency_id.to_i64).first?
+      end
+
+      return currency if currency
+
+      currency = UserPropertiesQuery.new.user_id(user.id).first?.try do |properties|
+        properties.currency_id.try do |currency_id|
+          CurrencyQuery.new.owner_id(user.id).id(currency_id).first?
+        end
+      end
+
+      raise "No reporting currency set for #{user.id}" if currency.nil?
+
+      return currency
+    end
+
+    # Workaround for when the user is not logged in (current_user is anonymous)
+    Currency.new(
+      id: 0,
+      name: "Anonymous Currency",
+      symbol: "anon",
+      owner_id: 0,
+      created_at: Time.utc(1970, 1, 1),
+      updated_at: Time.utc(1970, 1, 1)
+    )
+  end
+
+  private def require_reporting_currency
+    current_user.try do |user|
+      is_reporting_currency_set = UserPropertiesQuery
+        .new
+        .user_id(user.id)
+        .currency_id
+        .is_not_nil
+        .first?
+
+      return continue if is_reporting_currency_set
+
+      flash.set("warning", "You need to set your reporting currency before you can continue.")
+      return redirect to: UserProperties::Edit
+    end
+
+    Log.warn { "User not logged in, cannot require reporting currency" }
+    continue
   end
 end

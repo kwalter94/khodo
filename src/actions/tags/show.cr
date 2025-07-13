@@ -1,8 +1,7 @@
 class Tags::Show < BrowserAction
   include Lucky::Paginator::BackendHelpers
 
-  param currency_id : Int64? = nil # ameba:disable Lint/UselessAssign
-  param search_tx : String? = nil  # ameba:disable Lint/UselessAssign
+  param search_tx : String? = nil # ameba:disable Lint/UselessAssign
 
   @tag : Tag?
 
@@ -13,7 +12,6 @@ class Tags::Show < BrowserAction
       tag: tag,
       transactions: transactions,
       pages: pages,
-      reporting_currency: currency,
       currencies: currencies,
       exchange_rates: exchange_rates,
       search_tx: search_tx || ""

@@ -1,16 +1,12 @@
 class Accounts::Index < BrowserAction
-  param ledger_id : Int64 = nil    # ameba:disable Lint/UselessAssign
-  param currency_id : Int64? = nil # ameba:disable Lint/UselessAssign
+  param ledger_id : Int64 = nil # ameba:disable Lint/UselessAssign
 
   get "/accounts" do
-    reporting_currency = currency_id.try { |id| CurrencyQuery.new.owner_id(current_user.id).id(id).first? }
-    reporting_currency ||= CurrencyQuery.find_user_default_currency(current_user.id)
-
     report = Reports::AccountBalanceQuery
       .new
       .owner_id(current_user.id)
       .ledger_id(ledger_id || current_user_general_ledger.id)
-      .reject { |report| ["Expense", "Income"].includes?(report.account_type_name) }
+      .reject { |row| ["Expense", "Income"].includes?(row.account_type_name) }
 
     currencies = CurrencyQuery
       .new
@@ -27,14 +23,9 @@ class Accounts::Index < BrowserAction
 
     html IndexPage,
       report: report,
-      reporting_currency: reporting_currency,
       currencies: currencies,
       ledger: ledger,
       exchange_rates: exchange_rates
-  rescue error : UserProperties::ConfigurationError
-    Log.warn(exception: error) { "Missing user properties!" }
-    flash.info = error.to_s
-    redirect to: UserProperties::Edit
   end
 
   private def current_user_general_ledger : Ledger

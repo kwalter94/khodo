@@ -1,5 +1,6 @@
 class SignIns::Create < BrowserAction
   include Auth::RedirectSignedInUsers
+  skip require_reporting_currency
 
   post "/sign_in" do
     SignInUser.run(params) do |operation, authenticated_user|

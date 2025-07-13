@@ -1,4 +1,6 @@
 class UserProperties::Edit < BrowserAction
+  skip require_reporting_currency
+
   get "/user_properties" do
     user_properties = UserPropertiesQuery.new.user_id(current_user.id).first
     currencies = CurrencyQuery.new.owner_id(current_user.id)

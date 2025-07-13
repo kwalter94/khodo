@@ -1,18 +1,21 @@
 class Home::Index < BrowserAction
   Log = ::Log.for(self)
 
-  param currency_id : Int64? = nil # ameba:disable Lint/UselessAssign
-
   get "/" do
-    currency = find_reporting_currency
-    flash_missing_currencies(currency)
+    validate_reporting_currency_exchange_matrix
 
-    report = account_balance_report(currency)
+    report = Reports::CumulativeAccountBalanceQuery
+      .new
+      .owner_id(current_user.id)
+      .currency_id(reporting_currency.id)
+      .period(1)
+
+    user_currencies = CurrencyQuery.new.owner_id(current_user.id).name.asc_order
+
     assets = total_balance(report, "Asset")
     liabilities = total_balance(report, "Liability")
 
     html Home::IndexPage,
-      reporting_currency: currency,
       currencies: user_currencies,
       net_worth: Home::IndexPage::NetWorth.new(
         total_assets: assets[:total],
@@ -23,22 +26,13 @@ class Home::Index < BrowserAction
         value: assets[:total] + liabilities[:total],
         change: assets[:new_receipts] + liabilities[:new_receipts],
       )
-  rescue error : UserProperties::ConfigurationError
-    flash.info = "You need to set a default currency first!"
-    Log.warn(exception: error) { "Missing user properties" }
-    redirect to: UserProperties::Edit
   end
 
-  private def find_reporting_currency : Currency
-    currency = currency_id.try { |id| CurrencyQuery.new.owner_id(current_user.id).find(id) }
-    currency || CurrencyQuery.find_user_default_currency(current_user.id)
-  end
-
-  private def flash_missing_currencies(target_currency : Currency)
+  private def validate_reporting_currency_exchange_matrix
     exchange_rate_matrix = ExchangeRateMatrixQuery
       .new
       .owner_id(current_user.id)
-      .to_currency_id(target_currency.id)
+      .to_currency_id(reporting_currency.id)
       .rate.is_nil
 
     return if exchange_rate_matrix.size == 0
@@ -48,14 +42,6 @@ class Home::Index < BrowserAction
       .join(", ")
 
     flash.set("warning", "You may be viewing innacurate reports due to missing currency conversions: #{conversions}")
-  end
-
-  private def account_balance_report(currency : Currency) : Reports::CumulativeAccountBalanceQuery
-    Reports::CumulativeAccountBalanceQuery
-      .new
-      .owner_id(current_user.id)
-      .currency_id(currency.id)
-      .period(1)
   end
 
   private def total_balance(
@@ -70,9 +56,5 @@ class Home::Index < BrowserAction
           new_receipts: account.net_receipts.to_f64 + accum[:new_receipts],
         }
       end
-  end
-
-  private def user_currencies : Enumerable(Currency)
-    CurrencyQuery.new.owner_id(current_user.id)
   end
 end
