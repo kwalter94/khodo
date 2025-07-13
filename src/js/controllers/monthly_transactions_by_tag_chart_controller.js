@@ -44,14 +44,14 @@ export default class extends Controller {
           name: "Income",
           type: "line",
           smooth: true,
-          data: report.map(({income, expenses}) => income),
+          data: report.map(({income}) => Math.fround(income)),
           itemStyle: { color: "rgb(0, 255, 128)" },
         },
         {
           name: "Expenses",
           type: "line",
           smooth: true,
-          data: report.map(({expenses}) => expenses),
+          data: report.map(({expenses}) => Math.fround(expenses)),
           itemStyle: { color: "rgb(255, 0, 128)" },
         }
       ],

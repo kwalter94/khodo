@@ -43,7 +43,7 @@ export default class extends Controller {
       }
 
       const periods = accounts.get(display_name)
-      periods[periods.length - period] = balance;
+      periods[periods.length - period] = Math.fround(balance);
     }
 
     const chart = echarts.init(this.element);
